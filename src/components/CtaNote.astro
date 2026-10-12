@@ -1,0 +1,93 @@
+---
+import Actions from './Actions.astro';
+import Microtext from './Microtext.astro';
+import OpenStatus from './OpenStatus.astro';
+import { getDict, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  text: string;
+}
+const { locale, title, text } = Astro.props;
+const d = getDict(locale);
+---
+
+<section class="cta" aria-labelledby="cta-title">
+  <div class="cta-note on-ink underprint-ink">
+    <div class="wrap cta-grid">
+      <div>
+        <h2 id="cta-title" class="h2 cta-title">{title}</h2>
+        <p class="cta-text">{text}</p>
+      </div>
+      <div class="cta-side">
+        <Actions locale={locale} on="ink" />
+        <p class="cta-hours">
+          <span class="legend">{d.firm.hoursLabel}</span>
+          <span>{d.firm.days}, <span class="serial">08:00–16:00</span></span>
+          <OpenStatus locale={locale} class="cta-open" />
+        </p>
+      </div>
+    </div>
+    <Microtext locale={locale} class="cta-micro" />
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding: 0;
+  }
+  @media (min-width: 64rem) {
+    .cta {
+      padding: 0 0.75rem 0.75rem;
+    }
+  }
+  .cta-note {
+    position: relative;
+    padding-block: clamp(4.5rem, 9vw, 7rem) clamp(4rem, 8vw, 6rem);
+  }
+  .cta-note::after {
+    content: '';
+    position: absolute;
+    inset: 0.6rem;
+    border: 1px solid var(--rule-ink);
+    pointer-events: none;
+  }
+  .cta-grid {
+    display: grid;
+    gap: 2.5rem 6rem;
+    align-items: end;
+  }
+  @media (min-width: 64rem) {
+    .cta-grid {
+      grid-template-columns: 1.1fr 1fr;
+    }
+  }
+  .cta-title {
+    max-width: 16ch;
+  }
+  .cta-text {
+    margin-top: 1.1rem;
+    max-width: 34rem;
+    color: color-mix(in oklab, var(--paper) 84%, transparent);
+  }
+  .cta-hours {
+    margin-top: 1.6rem;
+    display: grid;
+    gap: 0.35rem;
+    color: color-mix(in oklab, var(--paper) 88%, transparent);
+  }
+  .cta-hours .legend {
+    color: var(--muted-ink);
+  }
+  .cta-note :global(.cta-open) {
+    color: var(--muted-ink);
+  }
+  .cta-note :global(.cta-micro) {
+    position: absolute;
+    left: 1.1rem;
+    right: 1.1rem;
+    bottom: 1.05rem;
+    color: var(--teal-glow);
+  }
+</style>

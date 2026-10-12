@@ -1,0 +1,521 @@
+---
+import { Image } from 'astro:assets';
+import logo from '@/assets/brand/logo-on-dark.png';
+import Icon from './Icon.astro';
+import { firm, telHref, waHref } from '@/data/firm';
+import { getDict, locales, routes, serviceKeys, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  page: PageKey | null;
+}
+
+const { locale, page } = Astro.props;
+const d = getDict(locale);
+const r = (p: PageKey) => routes[p][locale];
+const isService = page !== null && (serviceKeys as readonly string[]).includes(page);
+const alt = (l: Locale) => (page ? routes[page][l] : routes.home[l]);
+const nav: { key: PageKey; label: string }[] = [
+  { key: 'guide', label: d.nav.guide },
+  { key: 'about', label: d.nav.about },
+  { key: 'contact', label: d.nav.contact },
+];
+---
+
+<a class="skip plate plate-orange" href="#main">{d.nav.skip}</a>
+
+<header class="hdr on-ink" data-header>
+  <div class="hdr-bar">
+    <a class="hdr-brand" translate="no" href={r('home')} aria-label={`${firm.name}, ${d.nav.home}`}>
+      <Image src={logo} alt="" width={176} height={53} loading="eager" fetchpriority="high" />
+    </a>
+
+    <nav class="hdr-nav" aria-label={d.nav.primary}>
+      <ul>
+        <li class="hdr-has-menu">
+          <button
+            type="button"
+            class="hdr-link"
+            aria-expanded="false"
+            aria-controls="svc-menu"
+            data-menu-button
+            aria-current={isService ? 'true' : undefined}
+          >
+            {d.nav.services}
+            <Icon name="chevron" size={14} class="hdr-chev" />
+          </button>
+          <div id="svc-menu" class="hdr-menu material" hidden data-menu>
+            <ul>
+              {
+                serviceKeys.map((k) => (
+                  <li>
+                    <a href={r(k)} aria-current={page === k ? 'page' : undefined}>
+                      <span class="hdr-menu-name">{d.services[k].name}</span>
+                      <span class="hdr-menu-sum">{d.services[k].summary}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </li>
+        {
+          nav.map((n) => (
+            <li>
+              <a class="hdr-link" href={r(n.key)} aria-current={page === n.key ? 'page' : undefined}>
+                {n.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="hdr-actions">
+      <ul class="hdr-lang" aria-label={d.nav.language}>
+        {
+          locales.map((l) => (
+            <li>
+              <a
+                href={alt(l)}
+                hreflang={l}
+                lang={l}
+                aria-current={l === locale ? 'true' : undefined}
+                aria-label={getDict(l).langName}
+                data-astro-prefetch="false"
+              >
+                {l.toUpperCase()}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="hdr-phone serial" href={telHref}>
+        <Icon name="phone" size={16} />
+        <span>{firm.phone}</span>
+      </a>
+      <a class="plate plate-orange hdr-book" href={r('contact')}>{d.nav.book}</a>
+      <button type="button" class="hdr-burger" aria-controls="mobile-menu" aria-expanded="false" data-burger>
+        <Icon name="menu" size={22} />
+        <span class="sr-only">{d.nav.menu}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog id="mobile-menu" class="mm on-ink underprint-ink" aria-label={d.nav.menu} data-mobile-menu>
+  <div class="mm-top">
+    <Image src={logo} alt={firm.name} width={150} height={45} />
+    <button type="button" class="mm-close" data-close>
+      <Icon name="close" size={24} />
+      <span class="sr-only">{d.nav.close}</span>
+    </button>
+  </div>
+  <nav aria-label={d.nav.primary}>
+    <p class="legend mm-label">{d.nav.services}</p>
+    <ul class="mm-services">
+      {
+        serviceKeys.map((k) => (
+          <li>
+            <a href={r(k)} aria-current={page === k ? 'page' : undefined}>
+              {d.services[k].name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <ul class="mm-pages">
+      <li><a href={r('home')} aria-current={page === 'home' ? 'page' : undefined}>{d.nav.home}</a></li>
+      {
+        nav.map((n) => (
+          <li>
+            <a href={r(n.key)} aria-current={page === n.key ? 'page' : undefined}>
+              {n.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <div class="mm-actions">
+    <a class="plate plate-orange" href={r('contact')}>{d.nav.book}</a>
+    <a class="plate plate-line" href={telHref}><Icon name="phone" />{firm.phone}</a>
+    <a class="plate plate-line" href={waHref(d.firm.whatsappText)} rel="noopener" target="_blank">
+      <Icon name="whatsapp" />{d.nav.whatsapp}
+    </a>
+  </div>
+  <ul class="mm-lang" aria-label={d.nav.language}>
+    {
+      locales.map((l) => (
+        <li>
+          <a href={alt(l)} hreflang={l} lang={l} aria-current={l === locale ? 'true' : undefined}>
+            {getDict(l).langName}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</dialog>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-button]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+
+  const setScrolled = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
+  setScrolled();
+  window.addEventListener('scroll', setScrolled, { passive: true });
+
+  const closeMenu = () => {
+    if (!btn || !menu) return;
+    btn.setAttribute('aria-expanded', 'false');
+    menu.hidden = true;
+  };
+  btn?.addEventListener('click', () => {
+    if (!menu) return;
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    btn.setAttribute('aria-expanded', String(open));
+    menu.hidden = !open;
+  });
+  document.addEventListener('click', (e) => {
+    if (menu && !menu.hidden && !(e.target as Element).closest('.hdr-has-menu')) closeMenu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu && !menu.hidden) {
+      closeMenu();
+      btn?.focus();
+    }
+  });
+  menu?.addEventListener('focusout', (e) => {
+    if (!(e.relatedTarget as Element | null)?.closest('.hdr-has-menu')) closeMenu();
+  });
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-mobile-menu]');
+  const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
+  burger?.addEventListener('click', () => {
+    dialog?.showModal();
+    burger.setAttribute('aria-expanded', 'true');
+  });
+  dialog?.querySelector('[data-close]')?.addEventListener('click', () => dialog.close());
+  dialog?.addEventListener('close', () => burger?.setAttribute('aria-expanded', 'false'));
+  dialog?.addEventListener('click', (e) => {
+    if ((e.target as Element).closest('a')) dialog.close();
+  });
+</script>
+
+<style>
+  .skip {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    transform: translateY(-200%);
+  }
+  .skip:focus {
+    transform: none;
+  }
+
+  .hdr {
+    position: fixed;
+    z-index: 50;
+    inset: 0 0 auto;
+    background: transparent;
+    transition:
+      background-color 320ms var(--ease-out),
+      box-shadow 320ms var(--ease-out),
+      backdrop-filter 320ms var(--ease-out);
+  }
+  @media (min-width: 64rem) {
+    .hdr {
+      inset: 0.75rem 0.75rem auto;
+    }
+  }
+  .hdr:global(.is-scrolled) {
+    background: color-mix(in oklab, var(--ink) 84%, transparent);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    box-shadow:
+      inset 0 -1px 0 color-mix(in oklab, var(--paper) 10%, transparent),
+      0 10px 30px -12px color-mix(in oklab, var(--ink-deep) 55%, transparent);
+  }
+  .hdr-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: var(--header-h);
+    padding-inline: max(clamp(1rem, 2.4vw, 2rem), env(safe-area-inset-left)) max(clamp(1rem, 2.4vw, 2rem), env(safe-area-inset-right));
+  }
+  .hdr-brand {
+    flex: none;
+    display: block;
+    padding-block: 0.5rem;
+  }
+  .hdr-brand img {
+    width: clamp(136px, 12vw, 176px);
+    height: auto;
+  }
+
+  .hdr-nav {
+    display: none;
+    margin-inline: auto;
+  }
+  .hdr-nav > ul {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .hdr-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: color-mix(in oklab, var(--paper) 82%, transparent);
+    text-decoration: none;
+    transition: color 180ms var(--ease-out);
+  }
+  .hdr-link:hover,
+  .hdr-link[aria-expanded='true'] {
+    color: var(--paper);
+  }
+  .hdr-link[aria-current] {
+    color: var(--paper);
+    text-decoration: underline;
+    text-decoration-color: var(--orange);
+    text-underline-offset: 0.5em;
+    text-decoration-thickness: 1px;
+  }
+  .hdr-chev {
+    transition: transform 240ms var(--ease-out);
+  }
+  [aria-expanded='true'] .hdr-chev {
+    transform: rotate(180deg);
+  }
+
+  .hdr-has-menu {
+    position: relative;
+  }
+  .hdr-menu {
+    position: absolute;
+    top: calc(100% + 0.9rem);
+    left: 50%;
+    width: min(40rem, 80vw);
+    translate: -50% 0;
+    padding: 0.75rem;
+    background: color-mix(in oklab, var(--ink-raised) 94%, transparent);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--paper) 12%, transparent),
+      0 24px 48px -20px color-mix(in oklab, var(--ink-deep) 80%, transparent);
+    transform-origin: top center;
+    animation: menu-in 260ms var(--ease-out);
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.98);
+      filter: blur(4px);
+    }
+  }
+  .hdr-menu ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem;
+  }
+  .hdr-menu a {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem;
+    text-decoration: none;
+    transition: background-color 180ms var(--ease-out);
+  }
+  .hdr-menu a:hover,
+  .hdr-menu a[aria-current] {
+    background: color-mix(in oklab, var(--paper) 7%, transparent);
+  }
+  .hdr-menu-name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    line-height: 1.15;
+    color: var(--paper);
+  }
+  .hdr-menu-sum {
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: var(--muted-ink);
+  }
+
+  .hdr-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+  .hdr-lang {
+    display: none;
+    gap: 0.1rem;
+  }
+  .hdr-lang a {
+    display: inline-block;
+    padding: 0.4rem 0.45rem;
+    font-size: 0.74rem;
+    font-stretch: 125%;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: color-mix(in oklab, var(--paper) 62%, transparent);
+    text-decoration: none;
+  }
+  .hdr-lang a:hover {
+    color: var(--paper);
+  }
+  .hdr-lang a[aria-current] {
+    color: var(--orange);
+  }
+  .hdr-phone {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--paper);
+    text-decoration: none;
+    padding: 0.5rem 0.25rem;
+  }
+  .hdr-phone:hover span {
+    text-decoration: underline;
+    text-decoration-color: var(--orange);
+    text-underline-offset: 0.3em;
+  }
+  .hdr-book {
+    display: none;
+    min-height: 2.75rem;
+    padding-inline: 1.15rem;
+    font-size: 0.88rem;
+  }
+  .hdr-burger {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--paper);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--paper) 28%, transparent);
+    border-radius: var(--radius);
+  }
+
+  @media (min-width: 40rem) {
+    .hdr-book {
+      display: inline-flex;
+    }
+  }
+  @media (min-width: 64rem) {
+    .hdr-nav {
+      display: block;
+    }
+    .hdr-lang {
+      display: flex;
+    }
+    .hdr-burger {
+      display: none;
+    }
+  }
+  @media (min-width: 80rem) {
+    .hdr-phone {
+      display: inline-flex;
+    }
+  }
+
+  /* Mobile menu sheet */
+  .mm {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 1rem clamp(1rem, 5vw, 2rem) 2rem;
+    border: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .mm[open] {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: sheet-in 360ms var(--ease-out);
+  }
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+  .mm::backdrop {
+    background: color-mix(in oklab, var(--ink-deep) 60%, transparent);
+  }
+  .mm-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 3rem;
+  }
+  .mm-close {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--paper);
+  }
+  .mm-label {
+    color: var(--muted-ink);
+    margin-bottom: 0.75rem;
+  }
+  .mm-services a {
+    display: block;
+    padding: 0.55rem 0;
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    line-height: 1.1;
+    text-decoration: none;
+  }
+  .mm-services a[aria-current],
+  .mm-pages a[aria-current] {
+    color: var(--orange);
+  }
+  .mm-pages {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule-ink);
+    display: grid;
+    gap: 0.2rem;
+  }
+  .mm-pages a {
+    display: block;
+    padding: 0.5rem 0;
+    font-size: 1.1rem;
+    text-decoration: none;
+    color: color-mix(in oklab, var(--paper) 88%, transparent);
+  }
+  .mm-actions {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: auto;
+  }
+  .mm-lang {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.95rem;
+  }
+  .mm-lang a {
+    color: var(--muted-ink);
+    text-decoration: none;
+    padding: 0.4rem 0;
+  }
+  .mm-lang a[aria-current] {
+    color: var(--paper);
+    text-decoration: underline;
+    text-decoration-color: var(--orange);
+    text-underline-offset: 0.35em;
+  }
+</style>

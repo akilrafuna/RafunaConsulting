@@ -1,0 +1,317 @@
+---
+import Base from '@/layouts/Base.astro';
+import Band from '@/components/Band.astro';
+import CtaNote from '@/components/CtaNote.astro';
+import Faq from '@/components/Faq.astro';
+import Icon from '@/components/Icon.astro';
+import NoteHero from '@/components/NoteHero.astro';
+import Vignette from '@/components/Vignette.astro';
+import { photos, photoAlt, type PhotoKey } from '@/data/photos';
+import { getDict, routes, serviceKeys, type Locale, type ServiceKey } from '@/i18n';
+import { pageSchema } from '@/lib/schema';
+
+interface Props {
+  locale: Locale;
+  service: ServiceKey;
+}
+const { locale, service } = Astro.props;
+const d = getDict(locale);
+const s = d.services[service];
+const crumbs = [
+  { name: d.nav.home, url: routes.home[locale] },
+  { name: d.service.breadcrumb, url: `${routes.home[locale]}#services` },
+  { name: s.name, url: routes[service][locale] },
+];
+const schema = pageSchema(service, locale, { title: s.meta.title, description: s.meta.description, crumbs });
+const photoFor: Record<ServiceKey, PhotoKey> = {
+  accounting: 'accountant',
+  tax: 'inspection',
+  financial: 'signing',
+  investment: 'accountant',
+};
+const photo = photoFor[service];
+const others = serviceKeys.filter((k) => k !== service);
+// Key figures shown on the tax page, taken from the verified guide table.
+const taxFacts = service === 'tax' ? d.guide.rates.slice(0, 6) : [];
+---
+
+<Base locale={locale} page={service} title={s.meta.title} description={s.meta.description} schema={schema}>
+  <NoteHero locale={locale} crumbs={crumbs} h1={s.h1} lede={s.summary} />
+
+  <!-- Schedule of what is included -->
+  <section class="sched section underprint" aria-labelledby="sched-title">
+    <div class="wrap">
+      <h2 id="sched-title" class="h2 sched-title">{s.includesTitle}</h2>
+      <p class="sched-answer">{s.answer}</p>
+      <dl class="clauses">
+        {
+          s.includes.map((item) => (
+            <div class="clause">
+              <dt class="clause-title">{item.title}</dt>
+              <dd class="clause-text">{item.text}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  {
+    taxFacts.length > 0 && (
+      <section class="facts on-ink section underprint-ink" aria-labelledby="facts-title">
+        <div class="wrap facts-grid">
+          <div>
+            <h2 id="facts-title" class="h2">{d.service.factsTitle}</h2>
+            <a class="link facts-link" href={routes.guide[locale]}>
+              {d.service.guideLink}
+              <Icon name="arrow" size={16} />
+            </a>
+          </div>
+          <table class="facts-table">
+            <caption class="sr-only">{d.service.factsTitle}</caption>
+            <tbody>
+              {taxFacts.map((r) => (
+                <tr>
+                  <th scope="row">{r.what}</th>
+                  <td class="serial">{r.rate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Who it is for -->
+  <section class="aud section" aria-labelledby="aud-title">
+    <div class="wrap aud-grid">
+      <div class="aud-copy">
+        <h2 id="aud-title" class="h2">{s.audienceTitle}</h2>
+        <p class="aud-text">{s.audience}</p>
+        <Band ink="ink" class="aud-band" />
+      </div>
+      <Vignette
+        src={photos[photo].src}
+        alt={photoAlt(photo, locale)}
+        position={photos[photo].position}
+        class="aud-vig"
+        sizes="(min-width: 64rem) 26vw, 70vw"
+      />
+    </div>
+  </section>
+
+  <!-- Questions -->
+  <section class="sfaq section" aria-labelledby="sfaq-title">
+    <div class="wrap sfaq-grid">
+      <h2 id="sfaq-title" class="h2">{d.home.faqTitle}</h2>
+      <Faq faqs={s.faqs} />
+    </div>
+  </section>
+
+  <!-- Other services -->
+  <nav class="more section" aria-labelledby="more-title">
+    <div class="wrap">
+      <h2 id="more-title" class="legend more-title">{d.service.otherServices}</h2>
+      <ul class="more-list">
+        {
+          others.map((k) => (
+            <li>
+              <a href={routes[k][locale]}>
+                <span class="more-name">{d.services[k].name}</span>
+                <span class="more-sum">{d.services[k].summary}</span>
+                <Icon name="arrow-up-right" size={18} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+
+  <CtaNote locale={locale} title={d.service.askTitle} text={d.service.askText} />
+</Base>
+
+<style>
+  .sched-title {
+    max-width: 14ch;
+  }
+  .sched-answer {
+    margin-top: 1.2rem;
+    max-width: 44rem;
+    color: var(--muted-paper);
+  }
+  .clauses {
+    margin-top: clamp(2rem, 5vw, 4rem);
+    border-top: 1px solid var(--ink);
+  }
+  .clause {
+    display: grid;
+    gap: 0.6rem 4rem;
+    padding: clamp(1.4rem, 2.6vw, 2rem) 0;
+    border-bottom: 1px solid var(--rule-paper);
+  }
+  @media (min-width: 48rem) {
+    .clause {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: baseline;
+    }
+  }
+  .clause-title {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+    line-height: 1.15;
+  }
+  .clause-text {
+    max-width: 40rem;
+    font-size: 1.05rem;
+    color: color-mix(in oklab, var(--ink) 86%, var(--paper));
+  }
+
+  .facts-grid {
+    display: grid;
+    gap: 2.5rem 6rem;
+  }
+  @media (min-width: 64rem) {
+    .facts-grid {
+      grid-template-columns: 4fr 7fr;
+      align-items: start;
+    }
+  }
+  .facts-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.4rem;
+    color: var(--paper);
+    font-weight: 560;
+  }
+  .facts-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid color-mix(in oklab, var(--paper) 50%, transparent);
+  }
+  .facts-table th,
+  .facts-table td {
+    padding: 1.05rem 0;
+    border-bottom: 1px solid var(--rule-ink);
+    text-align: left;
+    vertical-align: baseline;
+  }
+  .facts-table th {
+    font-weight: 450;
+    color: color-mix(in oklab, var(--paper) 86%, transparent);
+    padding-right: 2rem;
+  }
+  .facts-table td {
+    text-align: right;
+    font-size: 1.35rem;
+    color: var(--orange);
+    white-space: nowrap;
+  }
+
+  .aud {
+    background: var(--paper-2);
+  }
+  .aud-grid {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 64rem) {
+    .aud-grid {
+      grid-template-columns: 7fr 4fr;
+      gap: 6rem;
+      align-items: center;
+    }
+  }
+  .aud-text {
+    margin-top: 1.4rem;
+    max-width: 38rem;
+    font-size: 1.15rem;
+  }
+  .aud-copy :global(.aud-band) {
+    margin-top: 3rem;
+    max-width: 38rem;
+  }
+  .aud-grid :global(.aud-vig) {
+    width: min(100%, 22rem);
+    justify-self: center;
+  }
+
+  .sfaq-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 64rem) {
+    .sfaq-grid {
+      grid-template-columns: 4fr 7fr;
+      gap: 6rem;
+      align-items: start;
+    }
+  }
+
+  .more {
+    padding-top: 0;
+  }
+  .more-title {
+    color: var(--teal-ink);
+  }
+  .more-list {
+    margin-top: 1.25rem;
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+  @media (min-width: 64rem) {
+    .more-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .more-list li + li {
+      border-left: 1px solid var(--rule-paper);
+    }
+  }
+  .more-list a {
+    position: relative;
+    display: grid;
+    gap: 0.5rem;
+    height: 100%;
+    padding: 1.6rem 3rem 1.8rem 0;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-paper);
+  }
+  @media (min-width: 64rem) {
+    .more-list a {
+      padding: 1.8rem 3.5rem 2rem 1.6rem;
+    }
+    .more-list li:first-child a {
+      padding-left: 0;
+    }
+  }
+  .more-list a :global(svg) {
+    position: absolute;
+    top: 1.9rem;
+    right: 1rem;
+    transition: transform 360ms var(--ease-out);
+  }
+  .more-list a:hover :global(svg) {
+    transform: translate(3px, -3px);
+  }
+  .more-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.15;
+  }
+  .more-list a:hover .more-name {
+    color: var(--teal-ink);
+  }
+  .more-sum {
+    font-size: 0.92rem;
+    color: var(--muted-paper);
+  }
+  @media (max-width: 40rem) {
+    .aud-grid :global(.aud-vig) {
+      width: min(58%, 13rem);
+    }
+  }
+</style>

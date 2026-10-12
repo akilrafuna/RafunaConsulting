@@ -1,0 +1,900 @@
+---
+import Base from '@/layouts/Base.astro';
+import Actions from '@/components/Actions.astro';
+import Band from '@/components/Band.astro';
+import BlurText from '@/components/BlurText';
+import DeadlineCoupons from '@/components/DeadlineCoupons';
+import Faq from '@/components/Faq.astro';
+import Icon from '@/components/Icon.astro';
+import Microtext from '@/components/Microtext.astro';
+import OpenStatus from '@/components/OpenStatus.astro';
+import Rosette from '@/components/Rosette.astro';
+import Vignette from '@/components/Vignette.astro';
+import { firm, mapsHref } from '@/data/firm';
+import { photos, photoAlt } from '@/data/photos';
+import { getDict, routes, serviceKeys, type Locale } from '@/i18n';
+import { pageSchema } from '@/lib/schema';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = getDict(locale);
+const h = d.home;
+const schema = pageSchema('home', locale, {
+  title: h.meta.title,
+  description: h.meta.description,
+  crumbs: [{ name: d.nav.home, url: routes.home[locale] }],
+});
+const buildDate = new Date().toISOString();
+---
+
+<Base locale={locale} page="home" title={h.meta.title} description={h.meta.description} schema={schema}>
+  <!-- The note -->
+  <section class="hero" id="top">
+    <div class="hero-note on-ink underprint-ink">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1 class="hero-h1">
+            <span class="display hero-display">{h.display}</span>
+            <span class="hero-legend">{h.h1}</span>
+          </h1>
+          <p class="lede hero-lede">{h.lede}</p>
+          <Actions locale={locale} on="ink" glare class="hero-actions" />
+        </div>
+        <Rosette class="hero-rosette" scrollTrigger=".hero" />
+      </div>
+      <div class="hero-foot">
+        <Microtext locale={locale} class="hero-micro" />
+        <div class="hero-facts">
+          <dl>
+            {
+              h.facts.map((f) => (
+                <div>
+                  <dt class="legend">{f.label}</dt>
+                  <dd class="serial">{f.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+          <OpenStatus locale={locale} class="hero-open" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The ledger of services -->
+  <section class="svc section underprint" aria-labelledby="svc-title" id="services">
+    <div class="wrap svc-grid">
+      <div class="svc-intro">
+        <h2 id="svc-title" class="h2">{h.servicesTitle}</h2>
+        <p class="svc-text">{h.servicesText}</p>
+        <p class="svc-answer">{h.answer}</p>
+        <p class="svc-sectors">
+          <span class="legend">{h.sectorsTitle}</span>
+          <span>{h.sectors.join(' · ')}</span>
+        </p>
+      </div>
+      <ol class="ledger">
+        {
+          serviceKeys.map((k) => (
+            <li>
+              <a class="ledger-row" href={routes[k][locale]}>
+                <span class="ledger-name">{d.services[k].name}</span>
+                <span class="ledger-sum">{d.services[k].summary}</span>
+                <span class="ledger-go" aria-hidden="true">
+                  <Icon name="arrow-up-right" size={20} />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Bond coupons: the real calendar -->
+  <section class="cal on-ink section underprint-ink" aria-labelledby="cal-title">
+    <div class="wrap">
+      <div class="cal-head">
+        <h2 id="cal-title" class="h2">{h.calendarTitle}</h2>
+        <div class="cal-side">
+          <p>{h.calendarText}</p>
+          <a class="link cal-link" href={routes.guide[locale]}>
+            {h.calendarLink}
+            <Icon name="arrow" size={16} />
+          </a>
+        </div>
+      </div>
+      <DeadlineCoupons
+        client:idle
+        locale={locale}
+        months={d.months}
+        buildDate={buildDate}
+        labels={d.deadlines.labels}
+        period={d.deadlines.period}
+        today={d.deadlines.today}
+        tomorrow={d.deadlines.tomorrow}
+        inDays={d.deadlines.inDays}
+      />
+    </div>
+  </section>
+
+  <!-- The name behind the figures -->
+  <section class="founder section" aria-labelledby="founder-title">
+    <div class="wrap founder-grid">
+      <div class="founder-copy">
+        <h2 id="founder-title" class="h2">{h.founderTitle}</h2>
+        <div class="prose-block founder-text">
+          {h.founderText.map((p) => <p>{p}</p>)}
+        </div>
+        <div class="signature">
+          <p class="sig-name" translate="no">{firm.founder}</p>
+          <span class="sig-rule" aria-hidden="true"></span>
+          <p class="legend sig-role">{h.founderRole} · {h.founderCredential} · {firm.founded}</p>
+        </div>
+      </div>
+      <aside class="register" aria-labelledby="team-title">
+        <h3 id="team-title" class="legend register-title">{h.teamTitle}</h3>
+        <ul>
+          {h.team.map((t) => <li>{t}</li>)}
+        </ul>
+        <p class="register-motto">{d.firm.motto}</p>
+        <p class="legend register-note">{d.firm.mottoNote}</p>
+      </aside>
+    </div>
+    <div class="wrap"><Band ink="ink" class="founder-band" /></div>
+  </section>
+
+  <!-- How we work -->
+  <section class="process section" aria-labelledby="process-title">
+    <div class="wrap process-grid">
+      <Vignette
+        src={photos.accountant.src}
+        alt={photoAlt('accountant', locale)}
+        position={photos.accountant.position}
+        class="process-vig"
+        sizes="(min-width: 64rem) 30vw, 70vw"
+      />
+      <div class="process-copy">
+        <h2 id="process-title" class="h2">{h.processTitle}</h2>
+        <p class="process-text">{h.processText}</p>
+        <ol class="steps">
+          {
+            h.steps.map((s, i) => (
+              <li class="step">
+                <span class="step-n serial" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 class="step-title">{s.title}</h3>
+                <p class="step-text">{s.text}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Owners abroad -->
+  <section class="dia on-ink section underprint-ink" aria-labelledby="dia-title">
+    <div class="wrap dia-grid">
+      <div class="dia-copy">
+        <h2 id="dia-title" class="h2">{h.diasporaTitle}</h2>
+        <p class="dia-text">{h.diasporaText}</p>
+        <ul class="dia-points">
+          {h.diasporaPoints.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+      <Vignette
+        src={photos.signing.src}
+        alt={photoAlt('signing', locale)}
+        position={photos.signing.position}
+        on="ink"
+        class="dia-vig"
+        sizes="(min-width: 64rem) 28vw, 70vw"
+      />
+    </div>
+  </section>
+
+  <!-- Questions -->
+  <section class="faqs section" aria-labelledby="faq-title">
+    <div class="wrap faqs-grid">
+      <div class="faqs-intro">
+        <h2 id="faq-title" class="h2">{h.faqTitle}</h2>
+        <p class="faqs-ask">{d.service.askText}</p>
+        <Actions locale={locale} on="paper" book={false} class="faqs-actions" />
+      </div>
+      <Faq faqs={h.faqs} />
+    </div>
+  </section>
+
+  <!-- Closing note -->
+  <section class="close" aria-labelledby="close-title">
+    <div class="close-note on-ink underprint-ink">
+      <div class="wrap close-grid">
+        <div>
+          <BlurText
+            client:idle
+            as="h2"
+            text={h.closingTitle}
+            className="h2 close-title"
+            delay={90}
+            animateBy="words"
+            direction="bottom"
+          />
+          <p class="close-text">{h.closingText}</p>
+          <Actions locale={locale} on="ink" class="close-actions" />
+        </div>
+        <dl class="close-facts">
+          <div>
+            <dt class="legend">{d.firm.addressLabel}</dt>
+            <dd>
+              <a href={mapsHref} rel="noopener" target="_blank" class="link">
+                {d.firm.addressLines[0]}<br />{d.firm.addressLines[1]}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt class="legend">{d.firm.hoursLabel}</dt>
+            <dd>
+              {d.firm.days}, <span class="serial">08:00–16:00</span>
+              <OpenStatus locale={locale} class="close-open" />
+            </dd>
+          </div>
+          <div>
+            <dt class="legend">{d.firm.emailLabel}</dt>
+            <dd><a class="link" href={`mailto:${firm.email}`}>{firm.email}</a></dd>
+          </div>
+        </dl>
+      </div>
+      <Microtext locale={locale} class="close-micro" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ——— Hero note ——— */
+  .hero {
+    padding: 0;
+  }
+  @media (min-width: 64rem) {
+    .hero {
+      padding: 0.75rem 0.75rem 0;
+    }
+  }
+  .hero-note {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    overflow: hidden;
+    padding-top: var(--header-h);
+  }
+  @media (min-width: 64rem) {
+    .hero-note {
+      min-height: calc(100svh - 0.75rem);
+    }
+  }
+  .hero-note::after {
+    content: '';
+    position: absolute;
+    inset: calc(var(--header-h) + 0.25rem) 0.6rem 0.6rem;
+    border: 1px solid var(--rule-ink);
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 5vw, 4.5rem) 0;
+    gap: 2rem;
+  }
+  @media (min-width: 64rem) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      padding-bottom: 1.5rem;
+    }
+  }
+  .hero-copy {
+    position: relative;
+    z-index: 2;
+  }
+  .hero-h1 {
+    display: grid;
+    gap: 1.6rem;
+    font-weight: inherit;
+  }
+  .hero-display {
+    display: block;
+    max-width: 11ch;
+    color: var(--paper);
+  }
+  .hero-legend {
+    font-family: var(--font-sans);
+    font-stretch: 125%;
+    font-weight: 560;
+    font-size: clamp(0.78rem, 1vw, 0.88rem);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--orange);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hero-legend::before {
+    content: '';
+    width: 2.5rem;
+    height: 1px;
+    background: currentColor;
+    flex: none;
+  }
+  .hero-lede {
+    margin-top: 1.6rem;
+    color: color-mix(in oklab, var(--paper) 86%, transparent);
+  }
+  .hero-copy :global(.hero-actions) {
+    margin-top: 2.4rem;
+  }
+  .hero-grid :global(.hero-rosette) {
+    width: min(118vw, 34rem);
+    justify-self: end;
+    margin: -1rem -32% -24% 0;
+    opacity: 0.9;
+  }
+  @media (min-width: 40rem) {
+    .hero-grid :global(.hero-rosette) {
+      width: min(80vw, 34rem);
+      margin: -2rem -18% -10% 0;
+    }
+  }
+  @media (min-width: 64rem) {
+    .hero-grid :global(.hero-rosette) {
+      width: min(44vw, calc(100svh - 17rem), 46rem);
+      margin: 0 -6% 0 0;
+      justify-self: center;
+      opacity: 1;
+    }
+  }
+  .hero-foot {
+    position: relative;
+    z-index: 2;
+    padding: 0 clamp(1.25rem, 5vw, 4.5rem) 1.6rem;
+  }
+  .hero-foot :global(.hero-micro) {
+    color: var(--teal-glow);
+    margin-bottom: 1rem;
+  }
+  .hero-facts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+  .hero-facts dl {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: 0.75rem clamp(1.25rem, 4vw, 2.5rem);
+  }
+  .hero-facts dl > div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.15rem;
+  }
+  .hero-facts dt {
+    color: var(--muted-ink);
+    text-wrap: balance;
+  }
+  @media (max-width: 40rem) {
+    .hero-facts dt {
+      font-stretch: 100%;
+      letter-spacing: 0.08em;
+    }
+  }
+  .hero-facts dd {
+    font-size: 1.05rem;
+    color: var(--paper);
+  }
+  .hero-foot :global(.hero-open) {
+    color: var(--muted-ink);
+  }
+
+  /* ——— Ledger of services ——— */
+  .svc-grid {
+    display: grid;
+    gap: 3.5rem;
+  }
+  @media (min-width: 64rem) {
+    .svc-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .svc-intro {
+      position: sticky;
+      top: calc(var(--header-h) + 3rem);
+    }
+  }
+  .svc-text {
+    margin-top: 1.4rem;
+    font-size: 1.15rem;
+    max-width: 30rem;
+  }
+  .svc-answer {
+    margin-top: 1.6rem;
+    padding-left: 1.25rem;
+    max-width: 32rem;
+    font-size: 0.98rem;
+    color: var(--muted-paper);
+    box-shadow: inset 1px 0 0 var(--orange);
+  }
+  .svc-sectors {
+    margin-top: 1.8rem;
+    display: grid;
+    gap: 0.45rem;
+    font-size: 0.95rem;
+  }
+  .svc-sectors .legend {
+    color: var(--teal-ink);
+  }
+  .ledger {
+    border-top: 1px solid var(--ink);
+  }
+  .ledger li {
+    border-bottom: 1px solid var(--rule-paper);
+  }
+  .ledger-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 'name go' 'sum go';
+    gap: 0.6rem 2rem;
+    padding: clamp(1.6rem, 3vw, 2.4rem) 0;
+    text-decoration: none;
+  }
+  .ledger-row::after {
+    /* engraved underline that draws in from the left */
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 520ms var(--ease-out);
+  }
+  .ledger-row:hover::after,
+  .ledger-row:focus-visible::after {
+    transform: scaleX(1);
+  }
+  .ledger-name {
+    grid-area: name;
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    transition: transform 420ms var(--ease-out);
+  }
+  .ledger-sum {
+    grid-area: sum;
+    max-width: 34rem;
+    color: var(--muted-paper);
+  }
+  .ledger-go {
+    grid-area: go;
+    align-self: center;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px var(--rule-paper);
+    transition:
+      background-color 300ms var(--ease-out),
+      color 300ms var(--ease-out),
+      transform 420ms var(--ease-out);
+  }
+  .ledger-row:hover .ledger-go {
+    background: var(--ink);
+    color: var(--paper);
+    transform: rotate(45deg);
+  }
+  .ledger-row:hover .ledger-name {
+    transform: translateX(0.4rem);
+  }
+
+  /* ——— Coupons ——— */
+  .cal {
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+  }
+  .cal-head {
+    display: grid;
+    gap: 1.25rem 4rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  @media (min-width: 64rem) {
+    .cal-head {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: end;
+    }
+  }
+  .cal-head .h2 {
+    max-width: 14ch;
+  }
+  .cal-side {
+    display: grid;
+    gap: 1rem;
+    max-width: 30rem;
+    color: color-mix(in oklab, var(--paper) 84%, transparent);
+  }
+  .cal-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    color: var(--paper);
+    font-weight: 560;
+  }
+
+  /* ——— Founder ——— */
+  .founder-grid {
+    display: grid;
+    gap: 3.5rem;
+  }
+  @media (min-width: 64rem) {
+    .founder-grid {
+      grid-template-columns: 7fr 4fr;
+      gap: 6rem;
+      align-items: end;
+    }
+  }
+  .founder-text {
+    margin-top: 1.6rem;
+    font-size: 1.1rem;
+  }
+  .signature {
+    margin-top: 3rem;
+    max-width: 34rem;
+  }
+  .sig-name {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-size: clamp(3rem, 6.5vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+  .sig-rule {
+    display: block;
+    height: 1px;
+    margin: 0.9rem 0 0.8rem;
+    background: linear-gradient(90deg, var(--ink), var(--ink) 70%, transparent);
+  }
+  .sig-role {
+    color: var(--muted-paper);
+  }
+  .register {
+    padding: 2rem;
+    background: var(--paper-hi);
+    box-shadow:
+      inset 0 0 0 1px var(--rule-paper),
+      inset 0 0 0 6px var(--paper-hi),
+      inset 0 0 0 7px var(--rule-paper);
+  }
+  .register-title {
+    color: var(--teal-ink);
+  }
+  .register ul {
+    margin-top: 1.1rem;
+    display: grid;
+  }
+  .register li {
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed var(--rule-paper);
+    font-weight: 520;
+  }
+  .register-motto {
+    margin-top: 1.8rem;
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    line-height: 1.15;
+  }
+  .register-note {
+    margin-top: 0.7rem;
+    color: var(--muted-paper);
+  }
+  .founder :global(.founder-band) {
+    margin-top: clamp(4rem, 8vw, 6rem);
+  }
+
+  /* ——— Process ——— */
+  .process {
+    background: var(--paper-2);
+  }
+  .process-grid {
+    display: grid;
+    gap: 3.5rem;
+  }
+  @media (min-width: 64rem) {
+    .process-grid {
+      grid-template-columns: 4fr 7fr;
+      gap: 6rem;
+      align-items: center;
+    }
+  }
+  .process-grid :global(.process-vig) {
+    width: min(100%, 26rem);
+    justify-self: center;
+  }
+  .process-text {
+    margin-top: 1.2rem;
+    max-width: 32rem;
+    color: var(--muted-paper);
+  }
+  .steps {
+    margin-top: 2.6rem;
+    display: grid;
+    gap: 0;
+    counter-reset: step;
+  }
+  @media (min-width: 40rem) {
+    .steps {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 3rem;
+    }
+  }
+  .step {
+    position: relative;
+    padding: 1.6rem 0 1.8rem;
+    border-top: 1px solid var(--rule-paper);
+  }
+  .step-n {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--orange-ink);
+  }
+  .step-title {
+    margin-top: 0.6rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.45rem;
+    line-height: 1.15;
+  }
+  .step-text {
+    margin-top: 0.6rem;
+    font-size: 0.98rem;
+    color: color-mix(in oklab, var(--ink) 84%, var(--paper));
+  }
+
+  /* ——— Diaspora ——— */
+  .dia-grid {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 64rem) {
+    .dia-grid {
+      grid-template-columns: 7fr 4fr;
+      gap: 6rem;
+      align-items: center;
+    }
+  }
+  .dia-copy .h2 {
+    max-width: 16ch;
+  }
+  .dia-text {
+    margin-top: 1.5rem;
+    max-width: 36rem;
+    font-size: 1.1rem;
+    color: color-mix(in oklab, var(--paper) 86%, transparent);
+  }
+  .dia-points {
+    margin-top: 2rem;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .dia-points li {
+    display: flex;
+    gap: 0.9rem;
+    align-items: baseline;
+  }
+  .dia-points li::before {
+    content: '';
+    flex: none;
+    width: 1.4rem;
+    height: 1px;
+    background: var(--orange);
+    translate: 0 -0.3rem;
+  }
+  .dia-grid :global(.dia-vig) {
+    width: min(100%, 22rem);
+    justify-self: center;
+  }
+
+  /* ——— FAQ ——— */
+  .faqs-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 64rem) {
+    .faqs-grid {
+      grid-template-columns: 4fr 7fr;
+      gap: 6rem;
+      align-items: start;
+    }
+    .faqs-intro {
+      position: sticky;
+      top: calc(var(--header-h) + 3rem);
+    }
+  }
+  .faqs-ask {
+    margin-top: 1.2rem;
+    max-width: 24rem;
+    color: var(--muted-paper);
+  }
+  .faqs-intro :global(.faqs-actions) {
+    margin-top: 1.6rem;
+  }
+
+  /* ——— Closing note ——— */
+  .close {
+    padding: 0 0 0;
+  }
+  @media (min-width: 64rem) {
+    .close {
+      padding: 0 0.75rem 0.75rem;
+    }
+  }
+  .close-note {
+    position: relative;
+    padding-block: clamp(5rem, 10vw, 8rem) clamp(4rem, 8vw, 6rem);
+  }
+  .close-note::after {
+    content: '';
+    position: absolute;
+    inset: 0.6rem;
+    border: 1px solid var(--rule-ink);
+    pointer-events: none;
+  }
+  .close-grid {
+    display: grid;
+    gap: 3.5rem;
+  }
+  @media (min-width: 64rem) {
+    .close-grid {
+      grid-template-columns: 7fr 4fr;
+      gap: 6rem;
+      align-items: end;
+    }
+  }
+  .close-grid :global(.close-title) {
+    font-size: clamp(2.6rem, 5.6vw, 5rem);
+    max-width: 13ch;
+  }
+  .close-text {
+    margin-top: 1.4rem;
+    max-width: 32rem;
+    color: color-mix(in oklab, var(--paper) 86%, transparent);
+  }
+  .close-grid :global(.close-actions) {
+    margin-top: 2.2rem;
+  }
+  .close-facts {
+    display: grid;
+    gap: 1.6rem;
+  }
+  .close-facts dt {
+    color: var(--muted-ink);
+    margin-bottom: 0.35rem;
+  }
+  .close-facts dd {
+    line-height: 1.5;
+  }
+  .close-facts :global(.close-open) {
+    display: flex;
+    margin-top: 0.4rem;
+    color: var(--muted-ink);
+  }
+  .close-note :global(.close-micro) {
+    position: absolute;
+    left: 1.1rem;
+    right: 1.1rem;
+    bottom: 1.05rem;
+    color: var(--teal-glow);
+  }
+  /* ——— Phones: one screen per idea, less reading ——— */
+  @media (max-width: 40rem) {
+    .hero-grid {
+      padding-top: 1.25rem;
+      gap: 0;
+    }
+    .hero-h1 {
+      gap: 1rem;
+    }
+    .hero-lede {
+      margin-top: 1rem;
+      font-size: 1.05rem;
+    }
+    .hero-copy :global(.hero-actions) {
+      margin-top: 1.5rem;
+    }
+    .hero-grid :global(.hero-rosette) {
+      width: 82vw;
+      margin: -1rem -24% -34% 0;
+      opacity: 0.8;
+    }
+    .svc-grid {
+      gap: 1.75rem;
+    }
+    .svc-intro {
+      display: contents;
+    }
+    .ledger {
+      order: 1;
+    }
+    .svc-answer,
+    .svc-sectors {
+      order: 2;
+      margin-top: 0;
+    }
+    .svc-answer {
+      font-size: 0.92rem;
+    }
+    .ledger-sum {
+      display: none;
+    }
+    .ledger-row {
+      padding: 1.15rem 0;
+      align-items: center;
+    }
+    .ledger-go {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+    .cal-head {
+      margin-bottom: 1.75rem;
+    }
+    .founder-text {
+      font-size: 1rem;
+    }
+    .signature {
+      margin-top: 1.75rem;
+    }
+    .register {
+      padding: 1.5rem;
+    }
+    .founder :global(.founder-band) {
+      margin-top: 2.5rem;
+    }
+    .process-grid,
+    .dia-grid {
+      gap: 2rem;
+    }
+    .process-grid :global(.process-vig),
+    .dia-grid :global(.dia-vig) {
+      width: min(58%, 13rem);
+    }
+    .steps {
+      margin-top: 1.5rem;
+    }
+    .step {
+      padding: 1rem 0 1.1rem;
+    }
+    .step-title {
+      font-size: 1.25rem;
+    }
+    .dia-text {
+      font-size: 1rem;
+    }
+    .close-grid {
+      gap: 2.5rem;
+    }
+  }
+</style>

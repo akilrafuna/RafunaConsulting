@@ -1,0 +1,140 @@
+---
+import Actions from './Actions.astro';
+import Microtext from './Microtext.astro';
+import Rosette from './Rosette.astro';
+import { getDict, type Locale } from '@/i18n';
+import type { Crumb } from '@/lib/schema';
+
+interface Props {
+  locale: Locale;
+  crumbs: Crumb[];
+  h1: string;
+  answer?: string;
+  lede?: string;
+  actions?: boolean;
+  book?: boolean;
+}
+const { locale, crumbs, h1, answer, lede, actions = true, book = true } = Astro.props;
+const d = getDict(locale);
+---
+
+<section class="nh" id="top">
+  <div class="nh-note on-ink underprint-ink">
+    <div class="nh-frame wrap">
+      <nav class="nh-crumbs" aria-label={d.common.breadcrumbLabel}>
+        <ol>
+          {
+            crumbs.map((c, i) => (
+              <li>
+                {i < crumbs.length - 1 ? <a href={c.url}>{c.name}</a> : <span aria-current="page">{c.name}</span>}
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+      <h1 class="nh-title">{h1}</h1>
+      {lede && <p class="lede nh-lede">{lede}</p>}
+      {answer && <p class="nh-answer">{answer}</p>}
+      {actions && <Actions locale={locale} on="ink" book={book} class="nh-actions" />}
+      <slot />
+    </div>
+    <Rosette class="nh-rosette" scrollTrigger=".nh" />
+    <Microtext locale={locale} class="nh-micro" />
+  </div>
+</section>
+
+<style>
+  .nh {
+    padding: 0;
+  }
+  @media (min-width: 64rem) {
+    .nh {
+      padding: 0.75rem 0.75rem 0;
+    }
+  }
+  .nh-note {
+    position: relative;
+    overflow: hidden;
+    padding-top: calc(var(--header-h) + clamp(1.75rem, 6vw, 4.5rem));
+    padding-bottom: clamp(3.5rem, 8vw, 6.5rem);
+  }
+  .nh-note::after {
+    /* engraved inner frame */
+    content: '';
+    position: absolute;
+    inset: calc(var(--header-h) + 0.25rem) 0.6rem 0.6rem;
+    border: 1px solid var(--rule-ink);
+    pointer-events: none;
+  }
+  .nh-frame {
+    position: relative;
+    z-index: 1;
+  }
+  .nh-crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.7rem;
+    font-size: 0.88rem;
+    color: var(--muted-ink);
+  }
+  .nh-crumbs li + li::before {
+    content: '/';
+    margin-right: 0.7rem;
+    opacity: 0.5;
+  }
+  .nh-crumbs a {
+    text-decoration: none;
+  }
+  .nh-crumbs a:hover {
+    color: var(--paper);
+  }
+  .nh-crumbs [aria-current] {
+    color: var(--orange);
+  }
+  .nh-title {
+    margin-top: 1.6rem;
+    max-width: 17ch;
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(2.5rem, 5.2vw, 4.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .nh-lede {
+    margin-top: 1.4rem;
+    color: var(--paper);
+  }
+  .nh-answer {
+    margin-top: 1.4rem;
+    max-width: 44rem;
+    font-size: clamp(1.05rem, 1.35vw, 1.2rem);
+    line-height: 1.6;
+    color: color-mix(in oklab, var(--paper) 86%, transparent);
+  }
+  .nh-frame :global(.nh-actions) {
+    margin-top: 2.2rem;
+  }
+  .nh-note :global(.nh-rosette) {
+    position: absolute;
+    width: min(46rem, 90vw);
+    right: max(-22rem, -40vw);
+    top: 50%;
+    translate: 0 -46%;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  @media (min-width: 64rem) {
+    .nh-note :global(.nh-rosette) {
+      opacity: 0.9;
+      right: -14rem;
+    }
+  }
+  .nh-note :global(.nh-micro) {
+    position: absolute;
+    left: 1.1rem;
+    right: 1.1rem;
+    bottom: 1.05rem;
+    color: var(--teal-glow);
+  }
+</style>

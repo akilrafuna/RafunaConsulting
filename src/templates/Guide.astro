@@ -1,0 +1,381 @@
+---
+import Base from '@/layouts/Base.astro';
+import CtaNote from '@/components/CtaNote.astro';
+import DeadlineCoupons from '@/components/DeadlineCoupons';
+import Faq from '@/components/Faq.astro';
+import Icon from '@/components/Icon.astro';
+import NoteHero from '@/components/NoteHero.astro';
+import { firm } from '@/data/firm';
+import { tax } from '@/data/tax';
+import { getDict, routes, type Locale } from '@/i18n';
+import { longDate } from '@/lib/dates';
+import { pageSchema } from '@/lib/schema';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = getDict(locale);
+const g = d.guide;
+const crumbs = [
+  { name: d.nav.home, url: routes.home[locale] },
+  { name: d.nav.guide, url: routes.guide[locale] },
+];
+const schema = pageSchema('guide', locale, { title: g.meta.title, description: g.meta.description, crumbs });
+const updated = longDate(new Date(firm.updated), locale, d.months);
+const toc = [
+  { id: 'next', label: g.nextTitle },
+  { id: 'calendar', label: g.calendarTitle },
+  { id: 'rates', label: g.ratesTitle },
+  { id: 'pit', label: g.pitTitle },
+  { id: 'faq', label: d.home.faqTitle },
+  { id: 'sources', label: g.sourcesTitle },
+];
+---
+
+<Base
+  locale={locale}
+  page="guide"
+  title={g.meta.title}
+  description={g.meta.description}
+  schema={schema}
+  ogType="article"
+>
+  <NoteHero locale={locale} crumbs={crumbs} h1={g.h1} answer={g.answer} actions={false}>
+    <p class="byline legend">
+      <span>{g.byline}</span>
+      <span>{g.updated} <time datetime={firm.updated}>{updated}</time></span>
+    </p>
+  </NoteHero>
+
+  <section class="next on-ink section underprint-ink" id="next" aria-labelledby="next-title">
+    <div class="wrap">
+      <div class="next-head">
+        <h2 id="next-title" class="h2">{g.nextTitle}</h2>
+        <p>{g.nextText}</p>
+      </div>
+      <DeadlineCoupons
+        client:idle
+        locale={locale}
+        months={d.months}
+        buildDate={new Date().toISOString()}
+        labels={d.deadlines.labels}
+        period={d.deadlines.period}
+        today={d.deadlines.today}
+        tomorrow={d.deadlines.tomorrow}
+        inDays={d.deadlines.inDays}
+      />
+    </div>
+  </section>
+
+  <div class="wrap article-grid section">
+    <nav class="toc" aria-label={g.calendarTitle}>
+      <ol>
+        {
+          toc.map((t) => (
+            <li>
+              <a href={`#${t.id}`}>{t.label}</a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <article class="article">
+      <section id="calendar" aria-labelledby="calendar-title">
+        <h2 id="calendar-title" class="h2">{g.calendarTitle}</h2>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr>{g.calendarHead.map((h) => <th scope="col">{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {
+                g.calendar.map((row) => (
+                  <tr>
+                    <th scope="row">{row.what}</th>
+                    <td class="when" data-label={g.calendarHead[1]}>{row.when}</td>
+                    <td data-label={g.calendarHead[2]}>{row.who}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="rates" aria-labelledby="rates-title">
+        <h2 id="rates-title" class="h2">{g.ratesTitle}</h2>
+        <div class="table-scroll">
+          <table class="ledger-table">
+            <thead>
+              <tr>{g.ratesHead.map((h) => <th scope="col">{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {
+                g.rates.map((row) => (
+                  <tr>
+                    <th scope="row">{row.what}</th>
+                    <td class="rate serial" data-label={g.ratesHead[1]}>{row.rate}</td>
+                    <td class="note" data-label={g.ratesHead[2]}>{row.note}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="pit" aria-labelledby="pit-title">
+        <h2 id="pit-title" class="h2">{g.pitTitle}</h2>
+        <table class="ledger-table pit-table">
+          <thead>
+            <tr>{g.pitHead.map((h) => <th scope="col">{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {
+              g.pit.map(([band, rate]) => (
+                <tr>
+                  <th scope="row">{band}</th>
+                  <td class="rate serial">{rate}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section id="faq" aria-labelledby="gfaq-title">
+        <h2 id="gfaq-title" class="h2">{d.home.faqTitle}</h2>
+        <Faq faqs={g.faqs} />
+      </section>
+
+      <section id="sources" class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title" class="h3">{g.sourcesTitle}</h2>
+        <p class="sources-note">{g.sourcesNote}</p>
+        <ul>
+          {
+            tax.sources.map((src) => (
+              <li>
+                <a class="link" href={src.url} rel="noopener" target="_blank">
+                  {src.name}
+                  <Icon name="arrow-up-right" size={14} />
+                </a>
+                {src.reviewed && (
+                  <span class="sources-date">
+                    {g.reviewed} <time datetime={src.reviewed}>{longDate(new Date(src.reviewed), locale, d.months)}</time>
+                  </span>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="disclaimer">{g.disclaimer}</p>
+      </section>
+    </article>
+  </div>
+
+  <CtaNote locale={locale} title={d.service.askTitle} text={d.service.askText} />
+</Base>
+
+<style>
+  .byline {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    color: var(--muted-ink);
+  }
+  .next-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem 3rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .next-head p {
+    color: var(--muted-ink);
+  }
+
+  .article-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
+  @media (min-width: 64rem) {
+    .article-grid {
+      grid-template-columns: 14rem minmax(0, 1fr);
+      gap: 5rem;
+      align-items: start;
+    }
+  }
+  .toc {
+    display: none;
+  }
+  @media (min-width: 64rem) {
+    .toc {
+      display: block;
+      position: sticky;
+      top: calc(var(--header-h) + 2.5rem);
+    }
+  }
+  .toc ol {
+    display: grid;
+    gap: 0.15rem;
+    border-left: 1px solid var(--rule-paper);
+  }
+  .toc a {
+    display: block;
+    padding: 0.4rem 0 0.4rem 1rem;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    font-size: 0.9rem;
+    color: var(--muted-paper);
+    text-decoration: none;
+    transition:
+      color 200ms var(--ease-out),
+      border-color 200ms var(--ease-out);
+  }
+  .toc a:hover {
+    color: var(--ink);
+    border-left-color: var(--orange);
+  }
+
+  .article {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(4rem, 8vw, 6rem);
+    max-width: 58rem;
+  }
+  .article .h2 {
+    margin-bottom: 1.6rem;
+  }
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ledger-table {
+    width: 100%;
+    min-width: 34rem;
+    border-collapse: collapse;
+    border-top: 1px solid var(--ink);
+    font-size: 0.98rem;
+  }
+  .pit-table {
+    min-width: 0;
+    max-width: 30rem;
+  }
+  .ledger-table th,
+  .ledger-table td {
+    padding: 1rem 1.25rem 1rem 0;
+    border-bottom: 1px solid var(--rule-paper);
+    text-align: left;
+    vertical-align: top;
+  }
+  .ledger-table thead th {
+    font-stretch: 125%;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal-ink);
+    padding-block: 0.8rem;
+  }
+  .ledger-table tbody th {
+    font-weight: 560;
+  }
+  .ledger-table .when {
+    font-weight: 560;
+    color: var(--ink);
+  }
+  .ledger-table .rate {
+    font-size: 1.15rem;
+    white-space: nowrap;
+    color: var(--orange-ink);
+  }
+  .ledger-table .note {
+    color: var(--muted-paper);
+    font-size: 0.92rem;
+  }
+  .ledger-table tbody tr {
+    transition: background-color 200ms var(--ease-out);
+  }
+  .ledger-table tbody tr:hover {
+    background: color-mix(in oklab, var(--paper-2) 70%, transparent);
+  }
+
+  /* Phones: each row restacks into a labelled block instead of scrolling sideways. */
+  @media (max-width: 40rem) {
+    .ledger-table:not(.pit-table) {
+      min-width: 0;
+    }
+    .ledger-table:not(.pit-table) thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+    .ledger-table:not(.pit-table) tr {
+      display: grid;
+      gap: 0.3rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--rule-paper);
+    }
+    .ledger-table:not(.pit-table) th,
+    .ledger-table:not(.pit-table) td {
+      display: block;
+      padding: 0;
+      border: 0;
+    }
+    .ledger-table td[data-label]::before {
+      content: attr(data-label) ': ';
+      font-stretch: 112%;
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--teal-ink);
+    }
+    .ledger-table .rate {
+      font-size: 1.05rem;
+    }
+  }
+
+  .sources {
+    padding-top: 2rem;
+    border-top: 1px solid var(--ink);
+  }
+  .sources-note {
+    margin-top: 0.6rem;
+    color: var(--muted-paper);
+  }
+  .sources ul {
+    margin-top: 1.2rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+  .sources li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    align-items: baseline;
+  }
+  .sources a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 560;
+    color: var(--teal-ink);
+  }
+  .sources-date {
+    font-size: 0.85rem;
+    color: var(--muted-paper);
+  }
+  .disclaimer {
+    margin-top: 1.6rem;
+    font-size: 0.88rem;
+    color: var(--muted-paper);
+    max-width: 44rem;
+  }
+</style>

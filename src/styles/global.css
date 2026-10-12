@@ -1,0 +1,364 @@
+@import "tailwindcss";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/bodoni-moda/opsz.css";
+@import "@fontsource-variable/archivo/wdth.css";
+@import "./islands.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-display);
+  --font-display: 'Bodoni Moda Variable', 'Bodoni 72', Didot, Georgia, serif;
+
+  --color-ink: var(--ink);
+  --color-ink-deep: var(--ink-deep);
+  --color-ink-raised: var(--ink-raised);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-hi: var(--paper-hi);
+  --color-teal: var(--teal);
+  --color-teal-ink: var(--teal-ink);
+  --color-teal-glow: var(--teal-glow);
+  --color-orange: var(--orange);
+  --color-orange-ink: var(--orange-ink);
+  --color-muted-ink: var(--muted-ink);
+  --color-muted-paper: var(--muted-paper);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: var(--radius);
+  --radius-xl: 4px;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Inks and papers: the security-print world */
+  --ink: #0a2e40;
+  --ink-deep: #061d29;
+  --ink-raised: #0f3a50;
+  --paper: #eef2ef;
+  --paper-2: #e3e9e5;
+  --paper-hi: #f7f9f7;
+  --teal: #1596bb;
+  --teal-ink: #0b6380;
+  --teal-glow: #3fb4d8;
+  --orange: #f07022;
+  --orange-ink: #a64a0e;
+  --muted-ink: #a9bec7;
+  --muted-paper: #4a6573;
+  --rule-paper: color-mix(in oklab, var(--ink) 16%, transparent);
+  --rule-ink: color-mix(in oklab, var(--paper) 16%, transparent);
+
+  /* shadcn tokens mapped onto the world */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper-hi);
+  --card-foreground: var(--ink);
+  --popover: var(--paper-hi);
+  --popover-foreground: var(--ink);
+  --primary: var(--orange);
+  --primary-foreground: var(--ink-deep);
+  --secondary: var(--paper-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-2);
+  --muted-foreground: var(--muted-paper);
+  --accent: var(--paper-2);
+  --accent-foreground: var(--ink);
+  --destructive: #b3261e;
+  --border: color-mix(in oklab, var(--ink) 22%, transparent);
+  --input: color-mix(in oklab, var(--ink) 30%, transparent);
+  --ring: var(--teal);
+  --radius: 2px;
+
+  /* Rhythm */
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --section: clamp(3.75rem, 11vw, 9.5rem);
+  --measure: 66ch;
+  --header-h: 4.5rem;
+
+  /* Motion: exponential ease-out, no overshoot */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-family: var(--font-sans);
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+    background: var(--ink-deep);
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "kern", "liga";
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--orange);
+    color: var(--ink-deep);
+  }
+  :focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+  }
+  .on-ink :focus-visible,
+  .on-ink:focus-visible {
+    outline-color: var(--orange);
+  }
+  a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  a, button, summary, label, select {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  img, svg, video {
+    display: block;
+    max-width: 100%;
+  }
+  input, textarea, select {
+    caret-color: var(--orange);
+  }
+  html {
+    scrollbar-color: color-mix(in oklab, var(--ink) 45%, transparent) var(--paper-2);
+  }
+  table {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+}
+
+/* ——— Lenis ——— */
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+@layer components {
+  /* Layout */
+  .wrap {
+    width: 100%;
+    max-width: 88rem;
+    margin-inline: auto;
+    padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
+  }
+  .section { padding-block: var(--section); }
+
+  /* Type: engraved display and banknote legends */
+  .display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(2.75rem, 6.4vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: -0.022em;
+  }
+  .h2 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(2rem, 3.8vw, 3.5rem);
+    line-height: 1.04;
+    letter-spacing: -0.016em;
+  }
+  .h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+  }
+  .legend {
+    font-family: var(--font-sans);
+    font-stretch: 125%;
+    font-weight: 560;
+    font-size: 0.72rem;
+    line-height: 1.4;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .lede {
+    font-size: clamp(1.125rem, 1.5vw, 1.3rem);
+    line-height: 1.55;
+    max-width: 38rem;
+  }
+  .prose-block { max-width: var(--measure); }
+  .prose-block p + p { margin-top: 1.1em; }
+  .serial {
+    font-family: var(--font-sans);
+    font-stretch: 112%;
+    font-weight: 620;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  /* Surfaces */
+  .on-ink {
+    background-color: var(--ink);
+    color: var(--paper);
+  }
+  .on-ink ::selection { background: var(--orange); color: var(--ink-deep); }
+
+  /* Underprint: fine phase-shifted waves, like the tint behind a banknote's text */
+  .underprint {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='24' viewBox='0 0 240 24'%3E%3Cg fill='none' stroke='%230a2e40' stroke-width='.5' opacity='.09'%3E%3Cpath d='M0 12 Q30 2 60 12 T120 12 T180 12 T240 12'/%3E%3Cpath d='M0 12 Q30 22 60 12 T120 12 T180 12 T240 12'/%3E%3Cpath d='M0 6 Q30 -4 60 6 T120 6 T180 6 T240 6'/%3E%3Cpath d='M0 18 Q30 28 60 18 T120 18 T180 18 T240 18'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 240px 24px;
+  }
+  .on-ink.underprint,
+  .underprint-ink {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='24' viewBox='0 0 240 24'%3E%3Cg fill='none' stroke='%23eef2ef' stroke-width='.5' opacity='.07'%3E%3Cpath d='M0 12 Q30 2 60 12 T120 12 T180 12 T240 12'/%3E%3Cpath d='M0 12 Q30 22 60 12 T120 12 T180 12 T240 12'/%3E%3Cpath d='M0 6 Q30 -4 60 6 T120 6 T180 6 T240 6'/%3E%3Cpath d='M0 18 Q30 28 60 18 T120 18 T180 18 T240 18'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 240px 24px;
+  }
+
+  /* Engraved double rule frame */
+  .frame {
+    position: relative;
+    outline: 1px solid currentColor;
+    outline-offset: -0.5rem;
+  }
+
+  /* Microtext rule: tiny repeated legend that reads as a line until you look closely */
+  .microtext {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: var(--font-sans);
+    font-stretch: 125%;
+    font-weight: 600;
+    font-size: 5.5px;
+    line-height: 1;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    user-select: none;
+  }
+
+  /* Ink plates: the site's buttons */
+  .plate {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3.25rem;
+    padding: 0 1.5rem;
+    border-radius: var(--radius);
+    font-family: var(--font-sans);
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      transform 160ms var(--ease-out),
+      background-color 220ms var(--ease-out),
+      color 220ms var(--ease-out),
+      box-shadow 220ms var(--ease-out);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .plate:active { transform: scale(0.97); transition-duration: 90ms; }
+  .plate-orange {
+    background: var(--orange);
+    color: var(--ink-deep);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--ink-deep) 28%, transparent),
+      inset 0 0 0 4px var(--orange),
+      inset 0 0 0 5px color-mix(in oklab, var(--ink-deep) 22%, transparent);
+  }
+  .plate-orange:hover { background: #f5843f; }
+  .plate-ink {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--paper) 20%, transparent),
+      inset 0 0 0 4px var(--ink),
+      inset 0 0 0 5px color-mix(in oklab, var(--paper) 14%, transparent);
+  }
+  .plate-ink:hover { background: var(--ink-raised); }
+  .plate-line {
+    color: inherit;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, currentColor 45%, transparent);
+  }
+  .plate-line:hover { box-shadow: inset 0 0 0 1px currentColor; background: color-mix(in oklab, currentColor 6%, transparent); }
+  .plate svg { width: 1.1rem; height: 1.1rem; flex: none; }
+
+  /* Text link with an engraved underline */
+  .link {
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in oklab, currentColor 35%, transparent);
+    transition: text-decoration-color 200ms var(--ease-out), color 200ms var(--ease-out);
+  }
+  .link:hover { text-decoration-color: var(--orange); }
+
+  /* Perforation edge for coupons */
+  .perf-x {
+    background-image: radial-gradient(circle at 50% 50%, var(--perf-bg, var(--paper)) 3px, transparent 3.5px);
+    background-size: 14px 14px;
+    background-repeat: repeat-x;
+  }
+
+  .sr-only-focusable:not(:focus) {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .material { background: var(--ink) !important; backdrop-filter: none !important; }
+}
+
+@media (prefers-contrast: more) {
+  :root { --muted-paper: #2c4552; --muted-ink: #d3e0e6; --border: color-mix(in oklab, var(--ink) 50%, transparent); }
+}

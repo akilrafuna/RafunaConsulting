@@ -1,0 +1,198 @@
+---
+import { Image } from 'astro:assets';
+import logo from '@/assets/brand/logo-on-dark.png';
+import Icon from './Icon.astro';
+import Microtext from './Microtext.astro';
+import OpenStatus from './OpenStatus.astro';
+import { firm, mailHref, mapsHref, telHref, waHref } from '@/data/firm';
+import { getDict, locales, routes, serviceKeys, type Locale, type PageKey } from '@/i18n';
+import { longDate } from '@/lib/dates';
+
+interface Props {
+  locale: Locale;
+  page: PageKey | null;
+}
+const { locale, page } = Astro.props;
+const d = getDict(locale);
+const r = (p: PageKey) => routes[p][locale];
+const year = new Date().getFullYear();
+const updated = longDate(new Date(firm.updated), locale, d.months);
+---
+
+<footer class="ftr on-ink underprint-ink">
+  <Microtext locale={locale} class="ftr-micro" />
+  <div class="wrap ftr-grid">
+    <div class="ftr-brand" translate="no">
+      <Image src={logo} alt={firm.name} width={200} height={60} loading="lazy" />
+      <p class="ftr-desc">{d.firm.description}</p>
+      <p class="ftr-motto">{d.firm.motto}</p>
+    </div>
+
+    <nav class="ftr-col" aria-label={d.nav.services}>
+      <h2 class="legend">{d.nav.services}</h2>
+      <ul>
+        {serviceKeys.map((k) => <li><a href={r(k)}>{d.services[k].name}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav class="ftr-col" aria-label={d.footer.explore}>
+      <h2 class="legend">{d.footer.explore}</h2>
+      <ul>
+        <li><a href={r('home')}>{d.nav.home}</a></li>
+        <li><a href={r('guide')}>{d.nav.guide}</a></li>
+        <li><a href={r('about')}>{d.nav.about}</a></li>
+        <li><a href={r('contact')}>{d.nav.contact}</a></li>
+      </ul>
+    </nav>
+
+    <address class="ftr-col ftr-contact">
+      <h2 class="legend">{d.footer.reach}</h2>
+      <a href={telHref} class="ftr-line serial"><Icon name="phone" size={16} />{firm.phone}</a>
+      <a href={waHref(d.firm.whatsappText)} class="ftr-line" rel="noopener" target="_blank"
+        ><Icon name="whatsapp" size={16} />{d.nav.whatsapp}</a
+      >
+      <a href={mailHref} class="ftr-line"><Icon name="mail" size={16} />{firm.email}</a>
+      <a href={mapsHref} class="ftr-line ftr-addr" rel="noopener" target="_blank"
+        ><Icon name="pin" size={16} /><span>{d.firm.addressLines[0]}<br />{d.firm.addressLines[1]}</span></a
+      >
+      <p class="ftr-line"><Icon name="clock" size={16} /><span>{d.firm.days}, <span class="serial">08:00–16:00</span></span></p>
+      <OpenStatus locale={locale} />
+    </address>
+  </div>
+
+  <div class="wrap ftr-base">
+    <p>© {year} {firm.name}. {d.footer.rights}</p>
+    <p>{d.common.updated} <time datetime={firm.updated}>{updated}</time></p>
+    <ul class="ftr-lang" aria-label={d.footer.languages}>
+      {
+        locales.map((l) => (
+          <li>
+            <a
+              href={page ? routes[page][l] : routes.home[l]}
+              hreflang={l}
+              lang={l}
+              aria-current={l === locale ? 'true' : undefined}
+            >
+              {getDict(l).langName}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    background-color: var(--ink-deep);
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
+  /* Room for the fixed mobile action bar. */
+  @media (max-width: 40rem) {
+    .ftr {
+      padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+    }
+  }
+  .ftr-micro {
+    color: var(--teal-glow);
+    padding-block: 0.6rem;
+    border-bottom: 1px solid var(--rule-ink);
+  }
+  .ftr-grid {
+    display: grid;
+    gap: 2.75rem 2rem;
+    padding-block: clamp(3.5rem, 7vw, 5.5rem);
+    grid-template-columns: 1fr 1fr;
+  }
+  .ftr-brand,
+  .ftr-contact {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 40rem) {
+    .ftr-contact {
+      grid-column: auto;
+    }
+  }
+  @media (min-width: 64rem) {
+    .ftr-grid {
+      grid-template-columns: 1.4fr 1fr 0.8fr 1.3fr;
+    }
+    .ftr-brand {
+      grid-column: auto;
+    }
+  }
+  .ftr-brand img {
+    width: 190px;
+    height: auto;
+  }
+  .ftr-desc {
+    margin-top: 1.25rem;
+    max-width: 22rem;
+    color: var(--muted-ink);
+    font-size: 0.95rem;
+  }
+  .ftr-motto {
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    line-height: 1.2;
+    max-width: 18rem;
+  }
+  .ftr-col h2 {
+    color: var(--muted-ink);
+    margin-bottom: 1.1rem;
+  }
+  .ftr-col ul {
+    display: grid;
+    gap: 0.55rem;
+  }
+  .ftr-col a {
+    text-decoration: none;
+    color: color-mix(in oklab, var(--paper) 90%, transparent);
+  }
+  .ftr-col a:hover {
+    color: var(--paper);
+    text-decoration: underline;
+    text-decoration-color: var(--orange);
+  }
+  .ftr-contact {
+    font-style: normal;
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+  }
+  .ftr-line {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .ftr-line :global(svg) {
+    margin-top: 0.18rem;
+    color: var(--teal-glow);
+  }
+  .ftr-base {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--rule-ink);
+    font-size: 0.82rem;
+    color: var(--muted-ink);
+  }
+  .ftr-lang {
+    display: flex;
+    gap: 1rem;
+  }
+  .ftr-lang a {
+    text-decoration: none;
+    color: var(--muted-ink);
+  }
+  .ftr-lang a:hover,
+  .ftr-lang a[aria-current] {
+    color: var(--paper);
+  }
+</style>

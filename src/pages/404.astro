@@ -1,0 +1,84 @@
+---
+import Base from '@/layouts/Base.astro';
+import Rosette from '@/components/Rosette.astro';
+import { getDict, locales, routes } from '@/i18n';
+
+// GitHub Pages serves one 404 for every language: Albanian first, with the other two beneath.
+const d = getDict('sq');
+---
+
+<Base locale="sq" page={null} title={d.notFound.meta.title} description={d.notFound.meta.description} noindex>
+  <section class="nf">
+    <div class="nf-note on-ink underprint-ink">
+      <Rosette class="nf-rosette" />
+      <div class="wrap nf-copy">
+        <p class="serial nf-code">404</p>
+        <h1 class="display nf-title">{d.notFound.h1}</h1>
+        <p class="lede nf-text">{d.notFound.text}</p>
+        <ul class="nf-links">
+          {
+            locales.map((l) => {
+              const t = getDict(l).notFound;
+              return (
+                <li lang={l}>
+                  <a class="plate plate-line" href={routes.home[l]}>
+                    {t.back}
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding: 0;
+  }
+  @media (min-width: 64rem) {
+    .nf {
+      padding: 0.75rem 0.75rem 0;
+    }
+  }
+  .nf-note {
+    position: relative;
+    min-height: 92svh;
+    display: grid;
+    align-items: center;
+    overflow: hidden;
+    padding: calc(var(--header-h) + 3rem) 0 5rem;
+  }
+  .nf-note :global(.nf-rosette) {
+    position: absolute;
+    width: min(60rem, 120vw);
+    right: -20%;
+    top: 50%;
+    translate: 0 -50%;
+    opacity: 0.4;
+  }
+  .nf-copy {
+    position: relative;
+  }
+  .nf-code {
+    font-size: 1rem;
+    color: var(--orange);
+  }
+  .nf-title {
+    margin-top: 1rem;
+    max-width: 12ch;
+  }
+  .nf-text {
+    margin-top: 1.4rem;
+    color: color-mix(in oklab, var(--paper) 84%, transparent);
+  }
+  .nf-links {
+    margin-top: 2.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    color: var(--paper);
+  }
+</style>

@@ -1,0 +1,107 @@
+---
+import Icon from './Icon.astro';
+import type { FAQ } from '@/i18n/types';
+
+interface Props {
+  faqs: FAQ[];
+  /** Heading level for the questions. */
+  level?: 'h3' | 'h4';
+}
+const { faqs, level = 'h3' } = Astro.props;
+const H = level;
+---
+
+<!-- Native details: answers stay in the HTML for search and AI crawlers, no JavaScript needed. -->
+<div class="faq">
+  {
+    faqs.map((f) => (
+      <details class="faq-item">
+        <summary>
+          <H class="faq-q">{f.q}</H>
+          <span class="faq-icon" aria-hidden="true">
+            <Icon name="chevron" size={18} />
+          </span>
+        </summary>
+        <p class="faq-a">{f.a}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq {
+    border-top: 1px solid var(--rule-paper);
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--rule-paper);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.4rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-q {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(1.2rem, 1.7vw, 1.45rem);
+    line-height: 1.25;
+    transition: color 200ms var(--ease-out);
+  }
+  summary:hover .faq-q {
+    color: var(--teal-ink);
+  }
+  .faq-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px var(--rule-paper);
+    transition:
+      transform 320ms var(--ease-out),
+      background-color 200ms var(--ease-out);
+  }
+  details[open] .faq-icon {
+    transform: rotate(180deg);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .faq-a {
+    max-width: var(--measure);
+    padding-bottom: 1.6rem;
+    color: color-mix(in oklab, var(--ink) 86%, var(--paper));
+  }
+  details[open] .faq-a {
+    animation: faq-in 420ms var(--ease-out);
+  }
+  @keyframes faq-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+  @supports (interpolate-size: allow-keywords) {
+    .faq-item {
+      interpolate-size: allow-keywords;
+    }
+    .faq-item::details-content {
+      height: 0;
+      overflow: clip;
+      transition:
+        height 420ms var(--ease-out),
+        content-visibility 420ms allow-discrete;
+    }
+    .faq-item[open]::details-content {
+      height: auto;
+    }
+  }
+</style>

@@ -1,0 +1,125 @@
+{
+  "title": "Choose the visual world for Rafuna Consulting",
+  "question": "The roll assigned Ulpiana Mosaic. Keep it, take my pick or an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Ulpiana Mosaic",
+      "kicker": "THE ROLL",
+      "lineage": "Roman floor mosaics of Ulpiana, the ancient city the firm's Ulpiane neighbourhood is named for",
+      "thesis": "Thousands of small entries set by hand until the whole picture is clear: the firm's work, shown as a mosaic.",
+      "palette": ["#0A2E40", "#E6EAE8", "#1596BB", "#F07022", "#061B26"],
+      "materials": ["limestone tesserae", "glass smalti", "grout lines on a strict module grid"],
+      "viewport": "Navy field; the logo's three chevrons laid in ~1,800 tesserae across the right two-thirds, running off the edge; monumental headline left with Call, WhatsApp and Book under it.",
+      "risk": "Reads as a museum or a tile shop if the grid goes loose or the type is timid.",
+      "raised": [
+        { "from": "challenger-ebru", "raise": "The mosaic is laid once, in one pass, on load; nothing loops or re-animates for decoration." },
+        { "from": "challenger-terminal", "raise": "Form states (sending, booked, error) print into the page in the mosaic's type, never as toasts." },
+        { "from": "challenger-glaze", "raise": "Every figure is set in tabular lining numerals with its unit, like a batch card beside each sample." },
+        { "from": "challenger-alphabet-storm", "raise": "One display face at monumental scale carries the hero; no second display voice." },
+        { "from": "challenger-itasha", "raise": "The hero mosaic breaks past the viewport edge and continues across a grout seam into the next section." },
+        { "from": "challenger-futurist-book", "raise": "No two sections share a composition; each is a different arrangement on the same module grid." }
+      ]
+    },
+    {
+      "id": "model-pick",
+      "label": "Intaglio Banknote",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "euro banknotes, share certificates and guilloche security printing",
+      "thesis": "The firm's promise engraved like currency: precision that cannot be forged.",
+      "palette": ["#0A2E40", "#F3F5F2", "#1596BB", "#F07022"],
+      "materials": ["guilloche engraving", "security paper", "microtext lines"],
+      "viewport": "A guilloche rosette in navy, teal and orange lines engraves itself behind a serial-numbered headline, with Call, WhatsApp and Book set as certificate fields.",
+      "risk": "Banks and fintechs already use this move, so it can read as a currency costume."
+    },
+    {
+      "id": "challenger-ebru",
+      "label": "Ebru Ledger Edge",
+      "verdict": "declined",
+      "lineage": "ebru floated-pigment marbling, once used on ledger edges so a removed page would show",
+      "thesis": "Marbled navy, teal and orange pigment combed into the logo's chevrons, as tamper-evident as an old ledger's edge.",
+      "palette": ["#0A2E40", "#1596BB", "#F07022", "#F1EFE9"],
+      "materials": ["floated pigment", "sized paper"],
+      "viewport": "A full-bleed marbled sheet combed into chevrons, headline set on the lifted paper.",
+      "case": "Fuses with a real ledger fact but loses both axes: visitors read art, not accounting, and fewer of them know ebru than know Ulpiana.",
+      "risk": "Heavy fluid simulation on mid-range phones.",
+      "kept": "One-pass, irreversible making: the mosaic is laid once and never loops."
+    },
+    {
+      "id": "challenger-terminal",
+      "label": "Phosphor Ledger Terminal",
+      "verdict": "declined",
+      "lineage": "green-phosphor terminals",
+      "thesis": "The books as a live transcript on glass.",
+      "palette": ["#041008", "#33FF66", "#145A2A"],
+      "materials": ["phosphor glow", "scanlines"],
+      "viewport": "An 80-column transcript printing the firm's services line by line.",
+      "case": "Loses both axes: no business owner looks for a trusted accountant in a terminal, and luxury is gone.",
+      "risk": "Reads as a hacker costume.",
+      "kept": "System states print themselves into the page instead of appearing as chrome."
+    },
+    {
+      "id": "challenger-glaze",
+      "label": "Glaze Shelf",
+      "verdict": "declined",
+      "lineage": "kiln shelves of glazed test cups",
+      "thesis": "Services as glazed samples ranked on one shelf.",
+      "palette": ["#F4F4F0", "#1F4FA8", "#0E2E6B"],
+      "materials": ["kiln shelf", "cobalt glaze"],
+      "viewport": "A row of glazed cups, each a service, with batch cards below.",
+      "case": "Loses both axes: no link between ceramics and accounting.",
+      "risk": "Pure metaphor with no carrier.",
+      "kept": "Batch-card numerals: every figure set tabular with its unit."
+    },
+    {
+      "id": "challenger-alphabet-storm",
+      "label": "Alphabet Storm",
+      "verdict": "declined",
+      "lineage": "kinetic typography as weather",
+      "thesis": "Words like TVSH and TAK condense and break into weather.",
+      "palette": ["#FFFFFF", "#111111", "#B8C0C8"],
+      "materials": ["monumental grotesk", "letter particles"],
+      "viewport": "Tax acronyms gathering into a storm over a white field.",
+      "case": "Loses both axes: playful chaos is the opposite of what a client wants from their accountant.",
+      "risk": "Unreadable on phones.",
+      "kept": "One monumental display face carrying the hero."
+    },
+    {
+      "id": "challenger-itasha",
+      "label": "Vinyl Wrap",
+      "verdict": "declined",
+      "lineage": "itasha printed car wraps",
+      "thesis": "The brand mark wrapped across panels with sponsor strips.",
+      "palette": ["#0A2E40", "#F07022", "#1596BB", "#FFFFFF"],
+      "materials": ["gloss vinyl", "panel seams"],
+      "viewport": "The logo scaled across panel seams with a sponsor strip of services.",
+      "case": "Loses both axes: motorsport loudness undercuts trust.",
+      "risk": "Reads as a racing team.",
+      "kept": "Artwork scaled so large it breaks across a seam into the next panel."
+    },
+    {
+      "id": "challenger-futurist-book",
+      "label": "Bolted Futurist Book",
+      "verdict": "declined",
+      "lineage": "1914 futurist bolted books",
+      "thesis": "Every spread a typographic collision.",
+      "palette": ["#EFE6D2", "#111111", "#C8241B"],
+      "materials": ["wood type", "aluminium bolts"],
+      "viewport": "Angled wood-type headlines slamming across a cream page.",
+      "case": "Loses both axes: shouting is the wrong voice for an accountant.",
+      "risk": "Hostile to reading.",
+      "kept": "No two spreads composed alike."
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "A premium accounting-firm site, executed impeccably.",
+    "palette": ["#FFFFFF", "#0A2E40", "#F07022"],
+    "materials": ["clean grid", "office photography"],
+    "viewport": "Headline and photo split hero, service cards, trust strip, contact form.",
+    "risk": "Indistinguishable from every other firm by design."
+  },
+  "steer": true
+}

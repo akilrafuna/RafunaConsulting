@@ -1,0 +1,46 @@
+---
+import '@/styles/global.css';
+import Head from '@/components/Head.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import MobileBar from '@/components/MobileBar.astro';
+import type { Locale, PageKey } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  page: PageKey | null;
+  title: string;
+  description: string;
+  schema?: object;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+}
+
+const { locale, page, title, description, schema, noindex, ogType } = Astro.props;
+---
+
+<!doctype html>
+<html lang={locale} dir="ltr">
+  <head>
+    <Head
+      locale={locale}
+      page={page}
+      title={title}
+      description={description}
+      schema={schema}
+      noindex={noindex}
+      ogType={ogType}
+    />
+  </head>
+  <body>
+    <Header locale={locale} page={page} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer locale={locale} page={page} />
+    <MobileBar locale={locale} />
+    <script>
+      import '@/scripts/motion';
+    </script>
+  </body>
+</html>

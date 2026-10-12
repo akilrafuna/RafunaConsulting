@@ -1,0 +1,31 @@
+---
+import type { GetStaticPaths } from 'astro';
+import About from '@/templates/About.astro';
+import Contact from '@/templates/Contact.astro';
+import Guide from '@/templates/Guide.astro';
+import Home from '@/templates/Home.astro';
+import Service from '@/templates/Service.astro';
+import { locales, pageKeys, routes, serviceKeys, type Locale, type PageKey, type ServiceKey } from '@/i18n';
+
+/** Every page in every language, each at its native-language slug. */
+export const getStaticPaths = (() =>
+  pageKeys.flatMap((page) =>
+    locales.map((locale) => {
+      const path = routes[page][locale].replace(/^\/|\/$/g, '');
+      return { params: { slug: path || undefined }, props: { page, locale } };
+    }),
+  )) satisfies GetStaticPaths;
+
+interface Props {
+  page: PageKey;
+  locale: Locale;
+}
+const { page, locale } = Astro.props;
+const isService = (serviceKeys as readonly string[]).includes(page);
+---
+
+{page === 'home' && <Home locale={locale} />}
+{isService && <Service locale={locale} service={page as ServiceKey} />}
+{page === 'guide' && <Guide locale={locale} />}
+{page === 'about' && <About locale={locale} />}
+{page === 'contact' && <Contact locale={locale} />}

@@ -1,0 +1,99 @@
+---
+import GlareHover from './GlareHover';
+import Icon from './Icon.astro';
+import { firm, telHref, waHref } from '@/data/firm';
+import { getDict, routes, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  /** Ground the row sits on. */
+  on?: 'ink' | 'paper';
+  /** Foil glint on the booking plate. */
+  glare?: boolean;
+  /** Hide the booking plate (e.g. on the contact page itself). */
+  book?: boolean;
+  class?: string;
+}
+const { locale, on = 'ink', glare = false, book = true, class: className } = Astro.props;
+const d = getDict(locale);
+const bookHref = routes.contact[locale] + '#booking';
+---
+
+<div class:list={['actions', `actions-${on}`, className]}>
+  {
+    book &&
+      (glare ? (
+        <GlareHover
+          client:idle
+          className="glare-plate"
+          background="transparent"
+          borderRadius="2px"
+          borderColor="transparent"
+          glareColor="#fff8ef"
+          glareOpacity={0.75}
+          glareAngle={-38}
+          glareSize={42}
+          variant="twin"
+          mode="hover"
+          intro
+          rimGlint={false}
+        >
+          <a class="plate plate-orange" href={bookHref}>
+            {d.nav.book}
+            <Icon name="arrow" />
+          </a>
+        </GlareHover>
+      ) : (
+        <a class="plate plate-orange" href={bookHref}>
+          {d.nav.book}
+          <Icon name="arrow" />
+        </a>
+      ))
+  }
+  <a class="plate plate-line" href={telHref}>
+    <Icon name="phone" />
+    <span class="serial">{firm.phone}</span>
+  </a>
+  <a class="plate plate-line" href={waHref(d.firm.whatsappText)} rel="noopener" target="_blank">
+    <Icon name="whatsapp" />
+    {d.nav.whatsapp}
+  </a>
+</div>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .actions-ink .plate-line {
+    color: var(--paper);
+  }
+  .actions-paper .plate-line {
+    color: var(--ink);
+  }
+  @media (max-width: 30rem) {
+    .actions {
+      gap: 0.6rem;
+    }
+    .actions > :global(.plate-orange) {
+      flex: 1 1 100%;
+    }
+    /* Call and WhatsApp share one row under the booking plate. */
+    .actions > :global(.plate-line) {
+      flex: 1 1 0;
+      min-width: 0;
+      padding-inline: 0.6rem;
+      font-size: 0.88rem;
+      gap: 0.45rem;
+    }
+    /* GlareHover sets an inline width; the island wrapper is display: contents. */
+    .actions :global(.glare-plate) {
+      flex: 1 1 100%;
+      width: 100% !important;
+    }
+    .actions :global(.glare-plate .plate) {
+      width: 100%;
+    }
+  }
+</style>

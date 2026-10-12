@@ -1,0 +1,71 @@
+---
+import bodoniLatin from '@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2?url';
+import { firm } from '@/data/firm';
+import { getDict, hreflang, locales, routes, type Locale, type PageKey } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  page: PageKey | null;
+  title: string;
+  description: string;
+  schema?: object;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+}
+
+const { locale, page, title, description, schema, noindex = false, ogType = 'website' } = Astro.props;
+const d = getDict(locale);
+const site = firm.site;
+const canonical = page ? site + routes[page][locale] : null;
+const ogImage = `${site}/og.png`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>{title}</title>
+<meta name="description" content={description} />
+{noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
+{canonical && <link rel="canonical" href={canonical} />}
+{
+  page &&
+    locales.map((l) => <link rel="alternate" hreflang={hreflang[l]} href={site + routes[page][l]} />)
+}
+{page && <link rel="alternate" hreflang="x-default" href={site + routes[page].sq} />}
+
+<!-- Only the display face is preloaded: it paints the largest element on every page. -->
+<link rel="preload" href={bodoniLatin} as="font" type="font/woff2" crossorigin />
+
+<meta name="theme-color" content="#0a2e40" />
+<meta name="color-scheme" content="light" />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+
+<meta name="geo.region" content="XK" />
+<meta name="geo.placename" content="Prishtinë" />
+<meta name="geo.position" content={`${firm.geo.lat};${firm.geo.lng}`} />
+<meta name="ICBM" content={`${firm.geo.lat}, ${firm.geo.lng}`} />
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={firm.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`${firm.name}: ${d.firm.description}`} />
+<meta property="og:locale" content={d.ogLocale} />
+{
+  locales
+    .filter((l) => l !== locale)
+    .map((l) => <meta property="og:locale:alternate" content={getDict(l).ogLocale} />)
+}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+{schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}

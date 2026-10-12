@@ -1,0 +1,260 @@
+---
+import Base from '@/layouts/Base.astro';
+import ContactForm from '@/components/ContactForm';
+import Icon from '@/components/Icon.astro';
+import NoteHero from '@/components/NoteHero.astro';
+import OpenStatus from '@/components/OpenStatus.astro';
+import Rosette from '@/components/Rosette.astro';
+import { firm, mailHref, mapsHref, telHref, waHref } from '@/data/firm';
+import { getDict, routes, type Locale } from '@/i18n';
+import { pageSchema } from '@/lib/schema';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = getDict(locale);
+const c = d.contact;
+const crumbs = [
+  { name: d.nav.home, url: routes.home[locale] },
+  { name: d.nav.contact, url: routes.contact[locale] },
+];
+const schema = pageSchema('contact', locale, { title: c.meta.title, description: c.meta.description, crumbs });
+const embed = `https://www.google.com/maps?q=${firm.geo.lat},${firm.geo.lng}&z=17&hl=${locale}&output=embed`;
+---
+
+<Base locale={locale} page="contact" title={c.meta.title} description={c.meta.description} schema={schema}>
+  <NoteHero locale={locale} crumbs={crumbs} h1={c.h1} lede={c.lede} answer={c.answer} book={false} />
+
+  <section class="book section underprint" id="booking" aria-labelledby="form-title">
+    <div class="wrap book-grid">
+      <div class="panel">
+        <h2 id="form-title" class="h2">{c.formTitle}</h2>
+        <p class="panel-text">{c.formText}</p>
+        <ContactForm client:idle endpoint={firm.formEndpoint} locale={locale} t={d.form} />
+      </div>
+
+      <aside class="channels" aria-labelledby="channels-title">
+        <h2 id="channels-title" class="legend channels-title">{c.channelsTitle}</h2>
+        <ul class="channel-list">
+          <li>
+            <a href={telHref}>
+              <Icon name="phone" size={22} />
+              <span class="ch-main serial">{firm.phone}</span>
+              <span class="ch-sub">{d.nav.call} · {c.callText}</span>
+            </a>
+          </li>
+          <li>
+            <a href={waHref(d.firm.whatsappText)} rel="noopener" target="_blank">
+              <Icon name="whatsapp" size={22} />
+              <span class="ch-main">{d.nav.whatsapp}</span>
+              <span class="ch-sub">{c.whatsappTextLong}</span>
+            </a>
+          </li>
+          <li>
+            <a href={mailHref}>
+              <Icon name="mail" size={22} />
+              <span class="ch-main">{firm.email}</span>
+              <span class="ch-sub">{c.emailText}</span>
+            </a>
+          </li>
+        </ul>
+        <div class="hours">
+          <p class="legend">{d.firm.hoursLabel}</p>
+          <p class="hours-line">{d.firm.days}<span class="serial">08:00–16:00</span></p>
+          <OpenStatus locale={locale} class="hours-open" />
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="visit on-ink section underprint-ink" aria-labelledby="visit-title">
+    <div class="wrap visit-grid">
+      <div>
+        <h2 id="visit-title" class="h2">{c.visitTitle}</h2>
+        <p class="visit-text">{c.visitText}</p>
+        <address class="visit-addr">
+          {d.firm.addressLines[0]}<br />{d.firm.addressLines[1]}
+        </address>
+        <a class="plate plate-line visit-dir" href={mapsHref} rel="noopener" target="_blank">
+          <Icon name="pin" />
+          {d.firm.directions}
+        </a>
+      </div>
+      <div class="map" data-map data-src={embed}>
+        <Rosette class="map-rosette" />
+        <div class="map-face">
+          <button type="button" class="plate plate-orange" data-map-load>
+            <Icon name="pin" />
+            {c.mapButton}
+          </button>
+          <p class="map-note">{c.mapNote}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-map]').forEach((map) => {
+    map.querySelector('[data-map-load]')?.addEventListener('click', () => {
+      const frame = document.createElement('iframe');
+      frame.src = map.dataset.src!;
+      frame.title = 'Google Maps';
+      frame.loading = 'lazy';
+      frame.referrerPolicy = 'no-referrer-when-downgrade';
+      frame.setAttribute('allowfullscreen', '');
+      map.replaceChildren(frame);
+      map.classList.add('is-live');
+    });
+  });
+</script>
+
+<style>
+  .book-grid {
+    display: grid;
+    gap: 3.5rem;
+  }
+  @media (min-width: 64rem) {
+    .book-grid {
+      grid-template-columns: 7fr 4fr;
+      gap: 5rem;
+      align-items: start;
+    }
+  }
+  .panel {
+    position: relative;
+    padding: clamp(1.75rem, 4vw, 3rem);
+    background: var(--paper-hi);
+    box-shadow:
+      inset 0 0 0 1px var(--rule-paper),
+      inset 0 0 0 7px var(--paper-hi),
+      inset 0 0 0 8px var(--rule-paper),
+      0 30px 60px -40px color-mix(in oklab, var(--ink) 45%, transparent);
+  }
+  .panel-text {
+    margin: 0.9rem 0 2rem;
+    max-width: 34rem;
+    color: var(--muted-paper);
+  }
+  .channels-title {
+    color: var(--teal-ink);
+  }
+  .channel-list {
+    margin-top: 1rem;
+    border-top: 1px solid var(--ink);
+  }
+  .channel-list a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 'icon main' 'icon sub';
+    gap: 0.2rem 1rem;
+    padding: 1.3rem 0;
+    border-bottom: 1px solid var(--rule-paper);
+    text-decoration: none;
+  }
+  .channel-list a :global(svg) {
+    grid-area: icon;
+    margin-top: 0.2rem;
+    color: var(--teal-ink);
+  }
+  .ch-main {
+    grid-area: main;
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .ch-main.serial {
+    font-family: var(--font-sans);
+    font-size: 1.3rem;
+  }
+  .ch-sub {
+    grid-area: sub;
+    font-size: 0.88rem;
+    color: var(--muted-paper);
+  }
+  .channel-list a:hover .ch-main {
+    color: var(--teal-ink);
+  }
+  .hours {
+    margin-top: 2rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .hours .legend {
+    color: var(--muted-paper);
+  }
+  .hours-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    font-size: 1.15rem;
+    font-weight: 560;
+  }
+  .hours :global(.hours-open) {
+    color: var(--muted-paper);
+  }
+
+  .visit-grid {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 64rem) {
+    .visit-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 5rem;
+      align-items: center;
+    }
+  }
+  .visit-text {
+    margin-top: 1.1rem;
+    color: color-mix(in oklab, var(--paper) 84%, transparent);
+  }
+  .visit-addr {
+    margin-top: 1.4rem;
+    font-style: normal;
+    font-size: 1.15rem;
+    line-height: 1.5;
+  }
+  .visit-dir {
+    margin-top: 1.8rem;
+    color: var(--paper);
+  }
+  .map {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--ink-raised);
+    box-shadow: inset 0 0 0 1px var(--rule-ink);
+  }
+  .map :global(.map-rosette) {
+    position: absolute;
+    width: 120%;
+    left: -10%;
+    top: 50%;
+    translate: 0 -50%;
+    opacity: 0.35;
+  }
+  .map-face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.9rem;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  .map-note {
+    font-size: 0.85rem;
+    color: var(--muted-ink);
+    max-width: 22rem;
+  }
+  .map :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: grayscale(0.4) contrast(1.05);
+  }
+</style>

@@ -1,0 +1,81 @@
+---
+interface Props {
+  ink?: 'teal' | 'orange' | 'ink' | 'paper';
+  waves?: number;
+  copies?: number;
+  height?: number;
+  class?: string;
+}
+const { ink = 'teal', waves = 9, copies = 7, height = 28, class: className } = Astro.props;
+---
+
+<svg
+  class:list={['band', `band-${ink}`, className]}
+  style={`--h:${height}px`}
+  data-band
+  data-waves={waves}
+  data-copies={copies}
+  aria-hidden="true"
+  focusable="false"></svg>
+
+<script>
+  import { bandPaths } from '@/lib/guilloche';
+  import { engrave } from '@/scripts/motion';
+
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll<SVGSVGElement>('svg[data-band]').forEach((svg) => {
+    const draw = () => {
+      const box = svg.getBoundingClientRect();
+      const w = Math.round(box.width);
+      const h = Math.round(box.height);
+      if (!w || !h) return 0;
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      svg.replaceChildren();
+      // Wave count scales with width so the pitch stays the same on every screen.
+      const waves = Math.max(3, Math.round((Number(svg.dataset.waves) * w) / 1200));
+      for (const d of bandPaths(w, h, waves, Number(svg.dataset.copies), Math.min(600, Math.round(w / 3)))) {
+        const p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', d);
+        svg.appendChild(p);
+      }
+      return w;
+    };
+    let width = draw();
+    if (width) engrave(svg);
+    new ResizeObserver(() => {
+      const w = svg.getBoundingClientRect().width;
+      if (Math.abs(w - width) > 24) {
+        const first = !width;
+        width = draw();
+        if (first && width) engrave(svg);
+      }
+    }).observe(svg);
+  });
+</script>
+
+<style>
+  .band {
+    display: block;
+    width: 100%;
+    height: var(--h);
+    fill: none;
+    stroke-width: 0.7;
+    overflow: visible;
+  }
+  .band-teal {
+    stroke: var(--teal);
+    opacity: 0.75;
+  }
+  .band-orange {
+    stroke: var(--orange);
+    opacity: 0.8;
+  }
+  .band-ink {
+    stroke: var(--ink);
+    opacity: 0.45;
+  }
+  .band-paper {
+    stroke: var(--paper);
+    opacity: 0.35;
+  }
+</style>

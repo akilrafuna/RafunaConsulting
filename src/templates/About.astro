@@ -1,0 +1,260 @@
+---
+import Base from '@/layouts/Base.astro';
+import Band from '@/components/Band.astro';
+import CtaNote from '@/components/CtaNote.astro';
+import Icon from '@/components/Icon.astro';
+import NoteHero from '@/components/NoteHero.astro';
+import OpenStatus from '@/components/OpenStatus.astro';
+import Vignette from '@/components/Vignette.astro';
+import { firm, mapsHref } from '@/data/firm';
+import { photos, photoAlt } from '@/data/photos';
+import { getDict, routes, type Locale } from '@/i18n';
+import { pageSchema } from '@/lib/schema';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = getDict(locale);
+const a = d.about;
+const crumbs = [
+  { name: d.nav.home, url: routes.home[locale] },
+  { name: d.nav.about, url: routes.about[locale] },
+];
+const schema = pageSchema('about', locale, { title: a.meta.title, description: a.meta.description, crumbs });
+---
+
+<Base locale={locale} page="about" title={a.meta.title} description={a.meta.description} schema={schema}>
+  <NoteHero locale={locale} crumbs={crumbs} h1={a.h1} lede={a.lede} />
+
+  <!-- Founder -->
+  <section class="fnd section underprint" aria-labelledby="fnd-title">
+    <div class="wrap fnd-grid">
+      <div class="fnd-sign">
+        <h2 id="fnd-title" class="legend fnd-label">{a.founderTitle}</h2>
+        <p class="fnd-name" translate="no">{firm.founder}</p>
+        <span class="fnd-rule" aria-hidden="true"></span>
+        <p class="legend fnd-role">{d.home.founderRole} · {d.home.founderCredential}</p>
+        <p class="fnd-year"><span class="legend">{d.home.facts[0].label}</span><span class="serial">{firm.founded}</span></p>
+      </div>
+      <div class="prose-block fnd-text">
+        {a.founderText.map((p) => <p>{p}</p>)}
+        <p>{a.story[0]}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="vals section" aria-labelledby="vals-title">
+    <div class="wrap">
+      <h2 id="vals-title" class="h2">{a.valuesTitle}</h2>
+      <p class="vals-motto">{d.firm.motto}</p>
+      <dl class="vals-grid">
+        {
+          a.values.map((v) => (
+            <div class="val">
+              <dt class="val-title">{v.title}</dt>
+              <dd class="val-text">{v.text}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="team on-ink section underprint-ink" aria-labelledby="team-title">
+    <div class="wrap team-grid">
+      <div>
+        <h2 id="team-title" class="h2">{a.teamTitle}</h2>
+        <p class="team-text">{a.teamText}</p>
+      </div>
+      <ul class="team-list">
+        {d.home.team.map((t) => <li>{t}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Office -->
+  <section class="office section" aria-labelledby="office-title">
+    <div class="wrap office-grid">
+      <Vignette
+        src={photos.signing.src}
+        alt={photoAlt('signing', locale)}
+        position={photos.signing.position}
+        class="office-vig"
+        sizes="(min-width: 64rem) 24vw, 70vw"
+      />
+      <div>
+        <h2 id="office-title" class="h2">{a.officeTitle}</h2>
+        <p class="office-text">{a.officeText}</p>
+        <address class="office-addr">
+          <a class="link" href={mapsHref} rel="noopener" target="_blank">
+            {d.firm.addressLines[0]}<br />{d.firm.addressLines[1]}
+          </a>
+          <span>{d.firm.days}, <span class="serial">08:00–16:00</span></span>
+          <OpenStatus locale={locale} class="office-open" />
+        </address>
+        <a class="plate plate-ink office-cta" href={mapsHref} rel="noopener" target="_blank">
+          <Icon name="pin" />
+          {d.firm.directions}
+        </a>
+        <Band ink="ink" class="office-band" />
+      </div>
+    </div>
+  </section>
+
+  <CtaNote locale={locale} title={d.home.closingTitle} text={d.home.closingText} />
+</Base>
+
+<style>
+  .fnd-grid {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 64rem) {
+    .fnd-grid {
+      grid-template-columns: 5fr 6fr;
+      gap: 6rem;
+      align-items: start;
+    }
+  }
+  .fnd-label {
+    color: var(--teal-ink);
+  }
+  .fnd-name {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-size: clamp(3.2rem, 7vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+  }
+  .fnd-rule {
+    display: block;
+    height: 1px;
+    margin: 1rem 0 0.85rem;
+    background: linear-gradient(90deg, var(--ink), var(--ink) 70%, transparent);
+  }
+  .fnd-role {
+    color: var(--muted-paper);
+  }
+  .fnd-year {
+    margin-top: 2.2rem;
+    display: grid;
+    gap: 0.2rem;
+  }
+  .fnd-year .legend {
+    color: var(--muted-paper);
+  }
+  .fnd-year .serial {
+    font-size: 2.2rem;
+    color: var(--orange-ink);
+  }
+  .fnd-text {
+    font-size: 1.1rem;
+  }
+
+  .vals {
+    background: var(--paper-2);
+  }
+  .vals-motto {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 2vw, 1.7rem);
+    color: var(--teal-ink);
+  }
+  .vals-grid {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    display: grid;
+    gap: 0 4rem;
+  }
+  @media (min-width: 48rem) {
+    .vals-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .val {
+    padding: 1.6rem 0 1.8rem;
+    border-top: 1px solid var(--ink);
+  }
+  .val-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.7rem;
+    line-height: 1.1;
+  }
+  .val-text {
+    margin-top: 0.7rem;
+    max-width: 30rem;
+    color: color-mix(in oklab, var(--ink) 84%, var(--paper));
+  }
+
+  .team-grid {
+    display: grid;
+    gap: 2.5rem 6rem;
+  }
+  @media (min-width: 64rem) {
+    .team-grid {
+      grid-template-columns: 6fr 5fr;
+      align-items: end;
+    }
+  }
+  .team-text {
+    margin-top: 1.4rem;
+    max-width: 36rem;
+    font-size: 1.1rem;
+    color: color-mix(in oklab, var(--paper) 86%, transparent);
+  }
+  .team-list {
+    border-top: 1px solid color-mix(in oklab, var(--paper) 45%, transparent);
+  }
+  .team-list li {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--rule-ink);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+  }
+
+  .office-grid {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 64rem) {
+    .office-grid {
+      grid-template-columns: 4fr 7fr;
+      gap: 6rem;
+      align-items: center;
+    }
+  }
+  .office-grid :global(.office-vig) {
+    width: min(100%, 22rem);
+    justify-self: center;
+  }
+  .office-text {
+    margin-top: 1.2rem;
+    max-width: 34rem;
+    font-size: 1.1rem;
+  }
+  .office-addr {
+    margin-top: 1.6rem;
+    font-style: normal;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .office-grid :global(.office-open) {
+    color: var(--muted-paper);
+  }
+  .office-cta {
+    margin-top: 1.8rem;
+  }
+  .office-grid :global(.office-band) {
+    margin-top: 3rem;
+  }
+  @media (max-width: 40rem) {
+    .office-grid :global(.office-vig) {
+      width: min(58%, 13rem);
+    }
+  }
+</style>

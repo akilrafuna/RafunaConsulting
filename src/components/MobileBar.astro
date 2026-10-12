@@ -1,0 +1,68 @@
+---
+import Icon from './Icon.astro';
+import { telHref, waHref } from '@/data/firm';
+import { getDict, routes, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = getDict(locale);
+---
+
+<nav class="mbar material on-ink" aria-label={d.nav.contact} data-mobile-bar>
+  <a href={telHref}><Icon name="phone" size={18} /><span>{d.nav.call}</span></a>
+  <a href={waHref(d.firm.whatsappText)} rel="noopener" target="_blank"><Icon name="whatsapp" size={18} /><span>{d.nav.whatsapp}</span></a>
+  <a href={routes.contact[locale]} class="mbar-book"><Icon name="calendar" size={18} /><span>{d.nav.book}</span></a>
+</nav>
+
+<style>
+  .mbar {
+    position: fixed;
+    z-index: 40;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.25fr;
+    gap: 1px;
+    background: color-mix(in oklab, var(--ink) 86%, transparent);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--paper) 14%, transparent),
+      0 12px 30px -10px color-mix(in oklab, var(--ink-deep) 70%, transparent);
+    border-radius: var(--radius);
+    transform: translateY(calc(100% + 1.5rem));
+    transition: transform 420ms var(--ease-out);
+  }
+  .mbar:global(.is-visible) {
+    transform: none;
+  }
+  .mbar a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 3.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mbar a:active {
+    background: color-mix(in oklab, var(--paper) 10%, transparent);
+  }
+  .mbar-book {
+    background: var(--orange);
+    color: var(--ink-deep);
+  }
+  .mbar-book:active {
+    background: #f5843f !important;
+  }
+  @media (min-width: 40rem) {
+    .mbar {
+      display: none;
+    }
+  }
+</style>

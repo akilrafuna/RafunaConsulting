@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-12T21:00:00+02:00",
+  "title": "Design System: Rafuna Consulting",
+  "extensions": {
+    "colorMeta": {
+      "intaglio-navy": { "role": "primary", "displayName": "Intaglio Navy", "canonical": "#0a2e40", "tonalRamp": ["#041219", "#061d29", "#0a2e40", "#0f3a50", "#1c4d66", "#3e6a80", "#7f9fae", "#c9d7dd"] },
+      "plate-orange": { "role": "secondary", "displayName": "Plate Orange", "canonical": "#f07022", "tonalRamp": ["#4a1d04", "#7a3209", "#a64a0e", "#d25f16", "#f07022", "#f5843f", "#f8b083", "#fcdcc6"] },
+      "plate-teal": { "role": "tertiary", "displayName": "Plate Teal", "canonical": "#1596bb", "tonalRamp": ["#05303d", "#084a5f", "#0b6380", "#107ea2", "#1596bb", "#3fb4d8", "#8fd2e7", "#d3eef6"] },
+      "security-paper": { "role": "neutral", "displayName": "Security Paper", "canonical": "#eef2ef", "tonalRamp": ["#2a3330", "#4a5652", "#7a8783", "#a9b5b1", "#cfd8d4", "#e3e9e5", "#eef2ef", "#f7f9f7"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Engraved Display", "purpose": "One per page: the note's headline." },
+      "label": { "displayName": "Banknote Legend", "purpose": "Legends, table heads, coupon kinds; never above a heading." },
+      "numeral": { "displayName": "Serial Numeral", "purpose": "Every date, hour, rate and phone number." }
+    },
+    "shadows": [
+      { "name": "floating-chrome", "value": "0 10px 30px -12px color-mix(in oklab, #061d29 55%, transparent)", "purpose": "Condensed header and mobile action bar over paper." },
+      { "name": "menu", "value": "0 24px 48px -20px color-mix(in oklab, #061d29 80%, transparent)", "purpose": "Services menu above the header." },
+      { "name": "certificate-panel", "value": "0 30px 60px -40px color-mix(in oklab, #0a2e40 45%, transparent)", "purpose": "Booking form panel on paper." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "All state transitions; exponential, no overshoot." },
+      { "name": "engrave", "value": "DrawSVG 0%→100%, 1.8–2.2s, expo.out, staggered", "purpose": "Guilloche linework drawing itself once on arrival." },
+      { "name": "rose-engine", "value": "ScrollTrigger scrub 0.6, rings counter-rotate 10–38°", "purpose": "Hero rosette turning with scroll." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "40rem" },
+      { "name": "md", "value": "48rem" },
+      { "name": "lg", "value": "64rem" },
+      { "name": "xl", "value": "80rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Plate",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The booking action: an orange ink plate with a double inset rule.",
+      "html": "<a class=\"ds-plate ds-plate-orange\" href=\"#\">Cakto takimin <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></a>",
+      "css": ".ds-plate{display:inline-flex;align-items:center;gap:.6rem;min-height:3.25rem;padding:0 1.5rem;border-radius:2px;font-family:'Archivo Variable',sans-serif;font-stretch:112%;font-weight:620;font-size:.95rem;text-decoration:none;transition:transform 160ms cubic-bezier(.16,1,.3,1),background-color 220ms cubic-bezier(.16,1,.3,1)}.ds-plate-orange{background:#f07022;color:#061d29;box-shadow:inset 0 0 0 1px rgba(6,29,41,.28),inset 0 0 0 4px #f07022,inset 0 0 0 5px rgba(6,29,41,.22)}.ds-plate-orange:hover{background:#f5843f}.ds-plate:active{transform:scale(.97)}.ds-plate:focus-visible{outline:2px solid #1596bb;outline-offset:3px}"
+    },
+    {
+      "name": "Line Plate",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "Call and WhatsApp actions: a hairline outline in the current ink.",
+      "html": "<a class=\"ds-line\" href=\"#\">+383 44 114 981</a>",
+      "css": ".ds-line{display:inline-flex;align-items:center;min-height:3.25rem;padding:0 1.5rem;border-radius:2px;color:#0a2e40;font-family:'Archivo Variable',sans-serif;font-stretch:112%;font-weight:620;font-variant-numeric:tabular-nums;text-decoration:none;box-shadow:inset 0 0 0 1px rgba(10,46,64,.45)}.ds-line:hover{box-shadow:inset 0 0 0 1px #0a2e40;background:rgba(10,46,64,.06)}.ds-line:focus-visible{outline:2px solid #1596bb;outline-offset:3px}"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Booking form field on bright paper.",
+      "html": "<label class=\"ds-field\"><span>Emri dhe mbiemri</span><input placeholder=\"Emri juaj\"></label>",
+      "css": ".ds-field{display:grid;gap:.45rem;font-family:'Archivo Variable',sans-serif}.ds-field span{font-stretch:112%;font-weight:600;font-size:.82rem;color:#0a2e40}.ds-field input{height:3rem;padding:0 .75rem;font-size:1rem;background:#f7f9f7;color:#0a2e40;border:1px solid rgba(10,46,64,.28);border-radius:2px;caret-color:#f07022}.ds-field input:focus-visible{outline:none;border-color:#1596bb;box-shadow:0 0 0 3px rgba(21,150,187,.22)}"
+    },
+    {
+      "name": "Bond Coupon",
+      "kind": "custom",
+      "refersTo": "coupon",
+      "description": "A dated deadline printed on perforated paper with an orange tear-off stub.",
+      "html": "<div class=\"ds-cp\"><div class=\"ds-cp-b\"><p class=\"ds-cp-k\">Deklarata dhe pagesa e TVSH-së</p><p><span class=\"ds-cp-d\">20</span> tetor 2026</p></div><p class=\"ds-cp-s\">pas 8 ditësh</p></div>",
+      "css": ".ds-cp{width:16rem;background:#eef2ef;color:#0a2e40;font-family:'Archivo Variable',sans-serif;position:relative;outline:1px solid rgba(10,46,64,.3);outline-offset:-.45rem}.ds-cp-b{padding:1.6rem 1.5rem 1.4rem}.ds-cp-k{font-stretch:125%;font-weight:600;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#0b6380}.ds-cp-d{font-family:'Bodoni Moda Variable',serif;font-size:4rem;line-height:.9}.ds-cp-s{margin:0;padding:.9rem 1.5rem 1rem;background:#f07022 radial-gradient(circle,#eef2ef 2px,transparent 2.5px) 0 -3px/11px 6px repeat-x;color:#061d29;font-weight:640}"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Translucent navy material bar with language switcher and booking plate.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-a\" href=\"#\" aria-current=\"page\">Shërbimet</a><a class=\"ds-nav-a\" href=\"#\">Afatet tatimore</a><a class=\"ds-nav-a\" href=\"#\">Kontakt</a><span class=\"ds-nav-l\">SQ · EN · DE</span></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:.25rem;height:4.5rem;padding:0 1.5rem;background:rgba(10,46,64,.84);backdrop-filter:blur(18px) saturate(150%);font-family:'Archivo Variable',sans-serif}.ds-nav-a{padding:.55rem .8rem;font-size:.92rem;font-weight:500;color:rgba(238,242,239,.82);text-decoration:none}.ds-nav-a:hover{color:#eef2ef}.ds-nav-a[aria-current]{color:#eef2ef;text-decoration:underline;text-decoration-color:#f07022;text-underline-offset:.5em}.ds-nav-l{margin-left:auto;font-size:.74rem;font-stretch:125%;font-weight:600;letter-spacing:.12em;color:#f07022}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Engraved Note",
+    "overview": "Every page is a note of value printed in intaglio: deep navy plates laid on cool security paper, engraved with guilloche work that a forger could not reproduce. The firm's promise (every figure in its place) is shown as craft rather than claimed. Precision is the luxury: hairline strokes, tabular figures, engraved display type, and nothing decorative that does not belong to the world of banknotes, bond coupons and share certificates.",
+    "keyCharacteristics": [
+      "Navy intaglio notes framed by a 1px inner rule, alternating with cool paper (never cream).",
+      "Generative guilloche: rosettes and braided bands drawn as true hairlines, at about 0.8px at any size.",
+      "Bodoni Moda engraved display over Archivo, with wide 125% tracked caps for legends.",
+      "Tabular serial numerals for every date, hour, rate and phone number.",
+      "Photography only as navy duotone engraved vignettes in oval double rings.",
+      "Bond-coupon perforations for anything dated."
+    ],
+    "rules": [
+      { "name": "The Two Inks Rule", "body": "Orange is a plate, not a paint. It fills only the primary action and the coupon stub, and otherwise appears as linework or as numerals on navy.", "section": "colors" },
+      { "name": "The Cool Paper Rule", "body": "Paper is cool and slightly green (security-paper). A warm cream ground breaks the world.", "section": "colors" },
+      { "name": "The One Display Voice Rule", "body": "Bodoni is the only display face. Italic display accents are not used.", "section": "typography" },
+      { "name": "The Plain Zero Rule", "body": "Figures use tabular lining numerals with an unslashed zero. This is why the sans is Archivo: Mona Sans, named in the original direction, has a slashed tabular zero.", "section": "typography" },
+      { "name": "The Engraved Frame Rule", "body": "Containers are framed by inset hairline rules (1px, often doubled at a 6–7px gap), never by drop shadows.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do alternate navy notes and paper sections, giving each note its inner 1px frame and microtext rule.",
+      "Do draw ornament as generated hairline guilloche (about 0.8px), and let it engrave once on arrival.",
+      "Do set every figure in tabular lining numerals that don't wrap.",
+      "Do keep the display face Bodoni and functional text Archivo, with legends at width 125%.",
+      "Do keep a human one tap away: call, WhatsApp and booking on every page."
+    ],
+    "donts": [
+      "Don't use a warm cream or ivory ground.",
+      "Don't fill large areas with orange; it is reserved for the primary plate and coupon stubs.",
+      "Don't set tracked-caps labels above headings. Breadcrumbs stay sentence case.",
+      "Don't show raw stock photos; run them through the engraved vignette.",
+      "Don't loop animations or animate content into view on every section; engraving is the only motion grammar."
+    ]
+  }
+}

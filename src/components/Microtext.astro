@@ -1,0 +1,14 @@
+---
+import { firm } from '@/data/firm';
+import { getDict, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+const { locale, class: className } = Astro.props;
+const motto = getDict(locale).firm.motto.replace(/\.$/, '');
+const unit = `${firm.name} · ${motto} · ${firm.city} ${firm.founded} · `;
+---
+
+<span class:list={['microtext', className]} aria-hidden="true">{unit.repeat(7)}</span>

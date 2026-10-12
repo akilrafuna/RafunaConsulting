@@ -1,0 +1,73 @@
+---
+import { firm } from '@/data/firm';
+import { getDict, type Locale } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+const { locale, class: className } = Astro.props;
+const d = getDict(locale);
+---
+
+<p
+  class:list={['open-status', className]}
+  data-open-status
+  data-open={firm.hours.opens}
+  data-close={firm.hours.closes}
+  data-label-open={d.firm.openNow}
+  data-label-closed={d.firm.closedNow}
+  hidden
+>
+  <span class="dot" aria-hidden="true"></span><span data-label></span>
+</p>
+
+<script>
+  // Office time is Europe/Belgrade (CET/CEST), wherever the visitor is.
+  const toMinutes = (hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return h * 60 + m;
+  };
+  const now = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Belgrade',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date());
+  const part = (t: string) => now.find((p) => p.type === t)?.value ?? '';
+  const weekday = part('weekday');
+  const minutes = Number(part('hour')) * 60 + Number(part('minute'));
+
+  document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+    const open =
+      !['Sat', 'Sun'].includes(weekday) &&
+      minutes >= toMinutes(el.dataset.open!) &&
+      minutes < toMinutes(el.dataset.close!);
+    el.dataset.state = open ? 'open' : 'closed';
+    el.querySelector('[data-label]')!.textContent = open ? el.dataset.labelOpen! : el.dataset.labelClosed!;
+    el.hidden = false;
+  });
+</script>
+
+<style>
+  .open-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.85rem;
+    font-weight: 560;
+  }
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+  }
+  .open-status[data-state='open'] .dot {
+    background: #5fd39a;
+    opacity: 1;
+    box-shadow: 0 0 0 3px color-mix(in oklab, #5fd39a 25%, transparent);
+  }
+</style>
